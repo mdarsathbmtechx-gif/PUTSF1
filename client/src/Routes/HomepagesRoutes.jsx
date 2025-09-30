@@ -5,12 +5,14 @@ import Home from "../Modules/Homepages/Pages/Home";
 import Footer from "../Modules/Homepages/Layout/Footer";
 import Banner from "../Modules/Homepages/Layout/Banner";
 import BlogHome from "../Modules/Homepages/Pages/Blog";
+import Hero from "../Modules/Homepages/Pages/Hero";
 
 const HomepagesRoutes = () => {
   return (
     <>
       <Header />
       <Banner/>
+      <Hero />
       <Home />
       <BlogHome />
       <Footer />
