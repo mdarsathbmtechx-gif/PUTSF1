@@ -1,3 +1,5 @@
+# putsf_backend/settings.py
+
 import os
 from pathlib import Path
 from pymongo import MongoClient
@@ -30,8 +32,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # Third-party
     'corsheaders',
     'rest_framework',
+
+    # Local apps
     'accounts',
     'gallery',
     'banner',
@@ -89,14 +95,26 @@ DATABASES = {
 }
 
 # -----------------------------
-# MongoDB local connection
+# MongoDB Atlas connection
 # -----------------------------
-MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/putsf_db")
-MONGO_DB_NAME = os.getenv("MONGO_DB_NAME", "putsf_db")
+MONGO_URI = os.getenv("MONGO_URI", None)
+MONGO_DB_NAME = os.getenv("MONGO_DB_NAME", None)
 
-# Connect to MongoDB
-client = MongoClient(MONGO_URI)
-db = client[MONGO_DB_NAME]
+db = None
+if MONGO_URI and MONGO_DB_NAME:
+    try:
+        client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
+        client.admin.command('ping')  # Test connection
+        db = client[MONGO_DB_NAME]
+        if DEBUG:
+            print(f"✅ Connected to MongoDB Atlas: {MONGO_DB_NAME}")
+    except Exception as e:
+        if DEBUG:
+            print(f"❌ MongoDB Atlas connection error: {e}")
+        db = None
+else:
+    if DEBUG:
+        print("⚠️ MONGO_URI or MONGO_DB_NAME not set. Using local fallback (db=None)")
 
 # -----------------------------
 # Password Validation

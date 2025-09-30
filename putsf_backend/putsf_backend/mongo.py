@@ -1,6 +1,29 @@
 # putsf_backend/mongo.py
+import os
 from pymongo import MongoClient
-from django.conf import settings
+from dotenv import load_dotenv
+from pathlib import Path
+import logging
 
-client = MongoClient(settings.MONGO_URI)  # Mongo URI from settings.py
-db = client[settings.MONGO_DB_NAME]       # Database name from settings.py
+# -----------------------------
+# Setup
+# -----------------------------
+BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(os.path.join(BASE_DIR, ".env"))
+
+MONGO_URI = os.getenv("MONGO_URI")
+MONGO_DB_NAME = os.getenv("MONGO_DB_NAME")
+
+db = None
+
+if MONGO_URI and MONGO_DB_NAME:
+    try:
+        client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
+        client.admin.command('ping')  # Test connection
+        db = client[MONGO_DB_NAME]
+        logging.info(f"✅ Connected to MongoDB Atlas: {MONGO_DB_NAME}")
+    except Exception as e:
+        logging.error(f"❌ MongoDB Atlas connection error: {e}")
+        db = None
+else:
+    logging.warning("⚠️ MONGO_URI or MONGO_DB_NAME not set. db is None")

@@ -1,37 +1,42 @@
+# blog/views.py
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser, FormParser
-from django.utils import timezone
 from django.conf import settings
+from django.utils import timezone
 from putsf_backend.mongo import db
+from bson.objectid import ObjectId
 import os
-from bson.objectid import ObjectId  # MongoDB ObjectId
 
 class BlogPostAPIView(APIView):
     parser_classes = (MultiPartParser, FormParser)
 
     def get(self, request, post_id=None):
+        """
+        GET all posts or a single post by ID
+        """
         posts_collection = db["blog_posts"]
 
-        if post_id:
-            try:
+        try:
+            if post_id:
                 post = posts_collection.find_one({"_id": ObjectId(post_id)})
-            except:
-                return Response({"error": "Invalid post ID"}, status=status.HTTP_400_BAD_REQUEST)
-
-            if not post:
-                return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
-
-            post["_id"] = str(post["_id"])  # convert ObjectId to string
-            return Response(post)
-        else:
-            posts = list(posts_collection.find({}))
-            for post in posts:
+                if not post:
+                    return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
                 post["_id"] = str(post["_id"])
-            return Response(posts)
+                return Response(post)
+            else:
+                posts = list(posts_collection.find({}).sort("created_at", -1))
+                for post in posts:
+                    post["_id"] = str(post["_id"])
+                return Response(posts)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request):
+        """
+        Create a new blog post
+        """
         posts_collection = db["blog_posts"]
 
         title = request.data.get("title")
@@ -44,17 +49,20 @@ class BlogPostAPIView(APIView):
             return Response({"error": "Title, content, and image are required"}, status=status.HTTP_400_BAD_REQUEST)
 
         # Save image to media/blog/
-        media_path = os.path.join(settings.MEDIA_ROOT, "blog")
-        os.makedirs(media_path, exist_ok=True)
-        file_path = os.path.join(media_path, image_file.name)
+        media_dir = os.path.join(settings.MEDIA_ROOT, "blog")
+        os.makedirs(media_dir, exist_ok=True)
+        file_path = os.path.join(media_dir, image_file.name)
 
-        with open(file_path, "wb+") as f:
-            for chunk in image_file.chunks():
-                f.write(chunk)
+        try:
+            with open(file_path, "wb+") as f:
+                for chunk in image_file.chunks():
+                    f.write(chunk)
+        except Exception as e:
+            return Response({"error": f"Failed to save image: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         image_url = request.build_absolute_uri(f"/media/blog/{image_file.name}")
 
-        # Save to MongoDB
+        # Insert into MongoDB
         post_data = {
             "title": title,
             "subtitle": subtitle,
@@ -70,7 +78,11 @@ class BlogPostAPIView(APIView):
         return Response({"message": "Blog post created successfully!", "post": post_data}, status=status.HTTP_201_CREATED)
 
     def delete(self, request, post_id):
+        """
+        Delete a blog post by ID
+        """
         posts_collection = db["blog_posts"]
+
         try:
             obj_id = ObjectId(post_id)
         except:
@@ -80,12 +92,11 @@ class BlogPostAPIView(APIView):
         if not post:
             return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        # Delete image file
+        # Delete image file if exists
         image_url = post.get("image_url")
         if image_url:
-            # Remove domain from URL
-            media_path = image_url.replace(request.build_absolute_uri('/'), '')
-            file_path = os.path.join(settings.BASE_DIR, media_path)
+            relative_path = image_url.replace(request.build_absolute_uri("/"), "")
+            file_path = os.path.join(settings.BASE_DIR, relative_path)
             if os.path.exists(file_path):
                 os.remove(file_path)
 
@@ -94,9 +105,10 @@ class BlogPostAPIView(APIView):
 
     def patch(self, request, post_id):
         """
-        Update blog post partially, e.g., change status from draft → published
+        Partially update a blog post, e.g., change status
         """
         posts_collection = db["blog_posts"]
+
         try:
             obj_id = ObjectId(post_id)
         except:
@@ -113,4 +125,5 @@ class BlogPostAPIView(APIView):
         posts_collection.update_one({"_id": obj_id}, {"$set": {"status": status_post}})
         post["status"] = status_post
         post["_id"] = str(post["_id"])
+
         return Response({"message": "Blog status updated successfully!", "post": post}, status=status.HTTP_200_OK)
