@@ -22,27 +22,28 @@ const Home = () => {
   }, []);
 
   return (
-    <main className="min-h-screen bg-gray-50 text-gray-900 font-sans">
+    <main className="min-h-screen font-sans bg-gray-50 text-gray-900">
+
       <div className="container mx-auto px-4 md:px-16 lg:px-24 xl:px-32 py-12 space-y-24">
 
         {/* Hero Section */}
-        <section className="relative bg-gradient-to-r from-blue-900 to-blue-700 text-white rounded-lg shadow-xl py-32 px-8 text-center">
-          <h1 className="text-5xl md:text-6xl font-extrabold leading-tight mb-6 animate-fadeIn">
+        <section className="relative bg-gradient-to-r from-indigo-900 via-purple-700 to-pink-600 text-white rounded-3xl shadow-2xl py-28 px-6 md:px-16 text-center overflow-hidden">
+          <h1 className="text-4xl md:text-6xl font-extrabold leading-tight mb-6 animate-fadeIn">
             Empower Students. Transform Futures.
           </h1>
-          <p className="text-xl md:text-2xl max-w-3xl mx-auto mb-8 animate-fadeIn">
-            We are an independent student advocacy movement, dedicated to protecting rights, ensuring equal access to education, and shaping tomorrow’s leaders.
+          <p className="text-lg md:text-xl max-w-3xl mx-auto mb-8 animate-fadeIn">
+            Independent student advocacy movement dedicated to rights, equal access, and leadership development.
           </p>
-          <div className="flex justify-center gap-6">
+          <div className="flex flex-col md:flex-row justify-center gap-6">
             <Link
               to="/contact"
-              className="bg-white text-blue-900 font-semibold px-8 py-3 rounded-full shadow-lg hover:shadow-2xl transition"
+              className="bg-white text-indigo-900 font-semibold px-8 py-3 rounded-full shadow-lg hover:shadow-2xl transition transform hover:-translate-y-1"
             >
               Join the Movement
             </Link>
             <Link
               to="/about"
-              className="border border-white text-white font-semibold px-8 py-3 rounded-full hover:bg-white hover:text-blue-900 transition"
+              className="border border-white text-white font-semibold px-8 py-3 rounded-full hover:bg-white hover:text-indigo-900 transition transform hover:-translate-y-1"
             >
               Learn More
             </Link>
@@ -51,37 +52,48 @@ const Home = () => {
 
         {/* About Us */}
         <section className="space-y-12">
-          <h2 className="text-4xl md:text-5xl font-bold text-center mb-8">Who We Are</h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white rounded-lg shadow-lg p-6 text-center hover:scale-105 transform transition">
-              <FaHandsHelping className="mx-auto text-4xl text-blue-600 mb-4"/>
-              <h3 className="text-xl font-semibold mb-2">Student Advocacy</h3>
-              <p>Raising voices for student rights, ensuring equality, and protecting educational opportunities for all.</p>
-            </div>
-            <div className="bg-white rounded-lg shadow-lg p-6 text-center hover:scale-105 transform transition">
-              <FaUsers className="mx-auto text-4xl text-blue-600 mb-4"/>
-              <h3 className="text-xl font-semibold mb-2">Community Engagement</h3>
-              <p>Building a network of students, mentors, and leaders to collaborate for meaningful reforms.</p>
-            </div>
-            <div className="bg-white rounded-lg shadow-lg p-6 text-center hover:scale-105 transform transition">
-              <FaBullhorn className="mx-auto text-4xl text-blue-600 mb-4"/>
-              <h3 className="text-xl font-semibold mb-2">Policy Influence</h3>
-              <p>Engaging with policymakers to create solutions that directly impact student welfare and education policies.</p>
-            </div>
+          <h2 className="text-3xl md:text-5xl font-bold text-center mb-8 text-gray-900">Who We Are</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              {
+                icon: <FaHandsHelping className="mx-auto text-4xl text-indigo-600 mb-4"/>,
+                title: "Student Advocacy",
+                desc: "Raising voices for student rights, ensuring equality, and protecting educational opportunities."
+              },
+              {
+                icon: <FaUsers className="mx-auto text-4xl text-indigo-600 mb-4"/>,
+                title: "Community Engagement",
+                desc: "Building networks of students, mentors, and leaders to collaborate for meaningful reforms."
+              },
+              {
+                icon: <FaBullhorn className="mx-auto text-4xl text-indigo-600 mb-4"/>,
+                title: "Policy Influence",
+                desc: "Engaging with policymakers to create impactful solutions for student welfare."
+              }
+            ].map((item, i) => (
+              <div
+                key={i}
+                className="bg-white rounded-2xl shadow-lg p-6 text-center hover:scale-105 transform transition-all duration-300"
+              >
+                {item.icon}
+                <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
+                <p className="text-gray-600">{item.desc}</p>
+              </div>
+            ))}
           </div>
         </section>
 
         {/* Services */}
         <section className="space-y-8">
-          <h3 className="text-4xl md:text-5xl font-bold text-center mb-8">Our Services</h3>
-          <div className="grid md:grid-cols-3 gap-6">
+          <h3 className="text-3xl md:text-5xl font-bold text-center mb-8 text-gray-900">Our Services</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {["Workshops & Seminars", "Student Counseling", "Legal Assistance"].map((service, i) => (
               <div
                 key={i}
-                className="bg-blue-50 rounded-lg shadow-md p-6 text-center hover:shadow-xl hover:scale-105 transform transition"
+                className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-2xl shadow-md p-6 text-center hover:shadow-xl hover:scale-105 transform transition-all duration-300"
               >
                 <h4 className="text-xl font-semibold mb-2">{service}</h4>
-                <p className="text-gray-700">Providing expert guidance and practical support to empower students and strengthen their rights.</p>
+                <p className="text-gray-700">Providing guidance and practical support to empower students and strengthen their rights.</p>
               </div>
             ))}
           </div>
@@ -89,12 +101,12 @@ const Home = () => {
 
         {/* Gallery Preview */}
         <section className="space-y-6">
-          <h3 className="text-4xl md:text-5xl font-bold text-center mb-6">Gallery Preview</h3>
+          <h3 className="text-3xl md:text-5xl font-bold text-center mb-6 text-gray-900">Gallery Preview</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
             {images.map((img) => (
               <div
                 key={img.id}
-                className="overflow-hidden rounded-lg shadow-md cursor-pointer hover:scale-105 transform transition"
+                className="overflow-hidden rounded-2xl shadow-md cursor-pointer hover:scale-105 transform transition-all duration-300"
                 onClick={() => setSelectedImage(img.image_url)}
               >
                 <img
@@ -108,7 +120,7 @@ const Home = () => {
           <div className="text-center">
             <Link
               to="/gallery"
-              className="inline-block text-blue-700 font-semibold hover:underline"
+              className="inline-block text-indigo-700 font-semibold hover:underline"
             >
               View Full Gallery
             </Link>
@@ -116,21 +128,19 @@ const Home = () => {
         </section>
 
         {/* Achievements / Stats */}
-        <section className="bg-white rounded-lg shadow-lg p-12 text-center space-y-6">
-          <h3 className="text-4xl md:text-5xl font-bold mb-8">Our Impact</h3>
+        <section className="bg-white rounded-3xl shadow-xl p-12 text-center space-y-6">
+          <h3 className="text-3xl md:text-5xl font-bold mb-8 text-gray-900">Our Impact</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div>
-              <h4 className="text-3xl font-extrabold text-blue-600 mb-2">+500</h4>
-              <p className="text-gray-700">Students Supported</p>
-            </div>
-            <div>
-              <h4 className="text-3xl font-extrabold text-blue-600 mb-2">+50</h4>
-              <p className="text-gray-700">Workshops Organized</p>
-            </div>
-            <div>
-              <h4 className="text-3xl font-extrabold text-blue-600 mb-2">+100</h4>
-              <p className="text-gray-700">Policy Recommendations</p>
-            </div>
+            {[
+              { number: "+500", label: "Students Supported" },
+              { number: "+50", label: "Workshops Organized" },
+              { number: "+100", label: "Policy Recommendations" }
+            ].map((item, i) => (
+              <div key={i}>
+                <h4 className="text-3xl md:text-4xl font-extrabold text-indigo-600 mb-2">{item.number}</h4>
+                <p className="text-gray-700">{item.label}</p>
+              </div>
+            ))}
           </div>
         </section>
       </div>
@@ -141,7 +151,7 @@ const Home = () => {
           className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 animate-fadeIn"
           onClick={() => setSelectedImage(null)}
         >
-          <div className="relative" onClick={(e) => e.stopPropagation()}>
+          <div className="relative max-w-[90vw] max-h-[90vh]" onClick={(e) => e.stopPropagation()}>
             <button
               className="absolute top-2 right-2 text-white text-3xl font-bold hover:text-gray-300"
               onClick={() => setSelectedImage(null)}
@@ -151,7 +161,7 @@ const Home = () => {
             <img
               src={selectedImage}
               alt="Preview"
-              className="max-w-full max-h-[80vh] rounded-lg shadow-lg animate-scaleIn"
+              className="max-w-full max-h-[80vh] rounded-xl shadow-2xl animate-scaleIn"
             />
           </div>
         </div>
@@ -160,16 +170,10 @@ const Home = () => {
       {/* Tailwind Animations */}
       <style>
         {`
-          @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-          }
-          @keyframes scaleIn {
-            from { transform: scale(0.8); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-          }
-          .animate-fadeIn { animation: fadeIn 0.3s ease-out forwards; }
-          .animate-scaleIn { animation: scaleIn 0.3s ease-out forwards; }
+          @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+          @keyframes scaleIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+          .animate-fadeIn { animation: fadeIn 0.35s ease-out forwards; }
+          .animate-scaleIn { animation: scaleIn 0.35s ease-out forwards; }
         `}
       </style>
     </main>
