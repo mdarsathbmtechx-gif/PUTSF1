@@ -36,3 +36,8 @@ staticfiles/
 # Render / deployment
 *.pem
 *.key
+
+
+
+client/.env
+client/.env.local
