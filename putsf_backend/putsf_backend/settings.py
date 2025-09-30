@@ -19,8 +19,11 @@ load_dotenv(os.path.join(BASE_DIR, ".env"))
 # Security
 # -----------------------------
 SECRET_KEY = os.getenv("SECRET_KEY", "fallback-secret-key")
-DEBUG = os.getenv("DEBUG", "True") == "True"
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")
+DEBUG = os.getenv("DEBUG", "False") == "True"
+
+# For Render, dynamically allow the service hostname
+RENDER_EXTERNAL_HOSTNAME = os.getenv("RENDER_EXTERNAL_HOSTNAME")
+ALLOWED_HOSTS = [RENDER_EXTERNAL_HOSTNAME] if RENDER_EXTERNAL_HOSTNAME else os.getenv("ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
 
 # -----------------------------
 # Applications
@@ -49,7 +52,7 @@ INSTALLED_APPS = [
 # -----------------------------
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Serve static files
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -82,6 +85,9 @@ TEMPLATES = [
     },
 ]
 
+# -----------------------------
+# WSGI
+# -----------------------------
 WSGI_APPLICATION = 'putsf_backend.wsgi.application'
 
 # -----------------------------
@@ -97,24 +103,21 @@ DATABASES = {
 # -----------------------------
 # MongoDB Atlas connection
 # -----------------------------
-MONGO_URI = os.getenv("MONGO_URI", None)
-MONGO_DB_NAME = os.getenv("MONGO_DB_NAME", None)
+MONGO_URI = os.getenv("MONGO_URI")
+MONGO_DB_NAME = os.getenv("MONGO_DB_NAME")
 
 db = None
-if MONGO_URI and MONGO_DB_NAME:
+if MONGO_URI and MONGO_DB_NAME and (os.getenv("RUN_MAIN") == "true" or os.getenv("RENDER") == "true"):
     try:
         client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
-        client.admin.command('ping')  # Test connection
+        client.admin.command('ping')  # Test connection at runtime
         db = client[MONGO_DB_NAME]
         if DEBUG:
             print(f"✅ Connected to MongoDB Atlas: {MONGO_DB_NAME}")
     except Exception as e:
+        db = None
         if DEBUG:
             print(f"❌ MongoDB Atlas connection error: {e}")
-        db = None
-else:
-    if DEBUG:
-        print("⚠️ MONGO_URI or MONGO_DB_NAME not set. Using local fallback (db=None)")
 
 # -----------------------------
 # Password Validation
