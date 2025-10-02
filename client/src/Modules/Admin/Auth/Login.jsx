@@ -18,9 +18,10 @@ export default function Login() {
     try {
       const res = await axios.post(
         import.meta.env.VITE_API_BASE_URL + "/admin/login/",
-        { email, password },
+        { username: email, password },  // <-- use 'username' here
         { headers: { "Content-Type": "application/json" } }
       );
+
 
       // Save JWT tokens
       localStorage.setItem("admin_access_token", res.data.access);
