@@ -1,6 +1,6 @@
 // src/Routes/Routes.jsx
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { HashRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
 // Import your route modules
 import HomepagesRoutes from "./HomepagesRoutes";
@@ -13,7 +13,7 @@ const AppRoutes = () => {
       <Routes>
         {/* Public/Homepages routes */}
         <Route path="/*" element={<HomepagesRoutes />} />
-         <Route path="/gallery" element={<Gallery />} />
+        <Route path="/gallery" element={<Gallery />} />
 
         {/* Admin routes */}
         <Route path="/admin/*" element={<AdminRoutes />} />
