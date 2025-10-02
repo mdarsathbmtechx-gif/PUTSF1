@@ -11,22 +11,24 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # -----------------------------
-# Load environment variables
+# Load environment variables first
 # -----------------------------
-load_dotenv(os.path.join(BASE_DIR, ".env"))
+load_dotenv(BASE_DIR / ".env")           # main .env
+load_dotenv(BASE_DIR / ".env.local", override=True)  # local overrides if exists
 
 # -----------------------------
 # Security
 # -----------------------------
 SECRET_KEY = os.getenv("SECRET_KEY", "fallback-secret-key")
-DEBUG = os.getenv("DEBUG", "False") == "True"
+DEBUG = os.getenv("DEBUG", "False").lower() in ["true", "1", "yes"]
 
-# For Render, dynamically allow the service hostname
+# ALLOWED_HOSTS
 RENDER_EXTERNAL_HOSTNAME = os.getenv("RENDER_EXTERNAL_HOSTNAME")
-ALLOWED_HOSTS = [RENDER_EXTERNAL_HOSTNAME] if RENDER_EXTERNAL_HOSTNAME else os.getenv("ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
+ALLOWED_HOSTS = [RENDER_EXTERNAL_HOSTNAME] if RENDER_EXTERNAL_HOSTNAME else os.getenv(
+    "ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
 
 # -----------------------------
-# Applications
+# Installed Apps
 # -----------------------------
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -41,10 +43,10 @@ INSTALLED_APPS = [
     'rest_framework',
 
     # Local apps
-    'accounts',
-    'gallery',
-    'banner',
-    'blog',
+    "putsf_backend.accounts",
+    "putsf_backend.gallery",
+    "putsf_backend.blog",
+    "putsf_backend.banner",
 ]
 
 # -----------------------------
@@ -52,7 +54,7 @@ INSTALLED_APPS = [
 # -----------------------------
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # Serve static files
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -91,7 +93,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'putsf_backend.wsgi.application'
 
 # -----------------------------
-# SQLite fallback (optional)
+# SQLite fallback
 # -----------------------------
 DATABASES = {
     'default': {
@@ -101,23 +103,35 @@ DATABASES = {
 }
 
 # -----------------------------
-# MongoDB Atlas connection
+# MongoDB Connection
 # -----------------------------
 MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB_NAME = os.getenv("MONGO_DB_NAME")
 
-db = None
-if MONGO_URI and MONGO_DB_NAME and (os.getenv("RUN_MAIN") == "true" or os.getenv("RENDER") == "true"):
-    try:
-        client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
-        client.admin.command('ping')  # Test connection at runtime
-        db = client[MONGO_DB_NAME]
-        if DEBUG:
-            print(f"✅ Connected to MongoDB Atlas: {MONGO_DB_NAME}")
-    except Exception as e:
-        db = None
-        if DEBUG:
-            print(f"❌ MongoDB Atlas connection error: {e}")
+_db = None
+
+def get_db():
+    """
+    Returns a MongoDB database connection.
+    Connects on first call, reuses connection afterward.
+    """
+    global _db
+    if _db is None:
+        if MONGO_URI and MONGO_DB_NAME:
+            try:
+                client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
+                client.admin.command('ping')  # Test connection
+                _db = client[MONGO_DB_NAME]
+                if DEBUG:
+                    print(f"✅ Connected to MongoDB Atlas: {MONGO_DB_NAME}")
+            except Exception as e:
+                _db = None
+                if DEBUG:
+                    print(f"❌ MongoDB connection failed: {e}")
+        else:
+            if DEBUG:
+                print("⚠️ MONGO_URI or MONGO_DB_NAME not set.")
+    return _db
 
 # -----------------------------
 # Password Validation

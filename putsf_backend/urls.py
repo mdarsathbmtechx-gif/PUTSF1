@@ -5,10 +5,10 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path("admin-django/", admin.site.urls),
-    path("api/admin/", include("accounts.urls")),
-    path('api/gallery/', include('gallery.urls')), # Gallery URLs at root
-    path("api/", include("banner.urls")), 
-    path("api/blog/", include("blog.urls")),
+    path("api/admin/", include("putsf_backend.accounts.urls")),   # ✅ full path
+    path('api/gallery/', include('putsf_backend.gallery.urls')),  # ✅ full path
+    path("api/", include("putsf_backend.banner.urls")),           # ✅ full path
+    path("api/blog/", include("putsf_backend.blog.urls")),  
     ]
 
 
