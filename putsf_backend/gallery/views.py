@@ -8,6 +8,7 @@ from putsf_backend.mongo import db
 from django.utils import timezone
 from bson.objectid import ObjectId
 import os
+from django.conf import settings
 
 class GalleryImageAPIView(APIView):
     parser_classes = (MultiPartParser, FormParser)
@@ -62,7 +63,7 @@ class GalleryImageAPIView(APIView):
             return Response({"error": f"Failed to save file: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         # Build absolute URL
-        full_url = request.build_absolute_uri(f"/media/gallery/{image_file.name}")
+        full_url = f"{settings.SITE_DOMAIN}/media/gallery/{image_file.name}"
 
         # Insert into MongoDB
         data = {

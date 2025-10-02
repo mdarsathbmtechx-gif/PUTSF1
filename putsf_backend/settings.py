@@ -189,3 +189,12 @@ REST_FRAMEWORK = {
 # -----------------------------
 APPEND_SLASH = True
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+from django.conf import settings
+
+# Use Render domain in build_absolute_uri
+if not settings.DEBUG:
+    SITE_DOMAIN = "https://putsf1.onrender.com"
+else:
+    SITE_DOMAIN = "http://127.0.0.1:8000"
