@@ -1,4 +1,3 @@
-# accounts/serializers.py
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -8,8 +7,11 @@ class AdminLoginSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True)
 
     def validate(self, data):
-        # Quick fix: use 'username' as Django expects
-        user = authenticate(username=data['email'], password=data['password'])
+        user = authenticate(
+            request=self.context.get('request'),
+            email=data['email'],
+            password=data['password']
+        )
         if user and user.is_active and getattr(user, "is_admin", False):
             refresh = RefreshToken.for_user(user)
             return {
