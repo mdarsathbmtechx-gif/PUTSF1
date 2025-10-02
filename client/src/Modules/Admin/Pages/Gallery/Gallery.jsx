@@ -26,6 +26,7 @@ const AdminGallery = () => {
 
   useEffect(() => {
     fetchImages();
+    
   }, []);
 
   // Drag & drop handlers
