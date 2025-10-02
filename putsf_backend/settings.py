@@ -164,11 +164,9 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # -----------------------------
 # CORS
 # -----------------------------
-CORS_ALLOW_ALL_ORIGINS = False
+CORS_ALLOW_ALL_ORIGINS = True
 
-CORS_ALLOWED_ORIGINS = [
-    "https://putsf1.onrender.com",
-]
+
 
 # -----------------------------
 # Custom User Model
