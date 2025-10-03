@@ -12,6 +12,7 @@ const BlogAdmin = ({ userToken }) => {
   const [previewImage, setPreviewImage] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  // Make sure this points to your backend production URL
   const API_URL = import.meta.env.VITE_API_BASE_URL + "/blog/posts/";
 
   useEffect(() => {
@@ -23,17 +24,8 @@ const BlogAdmin = ({ userToken }) => {
       const res = await axios.get(API_URL, {
         headers: { Authorization: `Token ${userToken}` },
       });
-      // Ensure image_url fallback works for static folder
-      const data = Array.isArray(res.data) ? res.data : [];
-      const updatedData = data.map((blog) => ({
-        ...blog,
-        image_url: blog.image_url
-          ? blog.image_url
-          : blog.image
-          ? `${import.meta.env.VITE_API_BASE_URL}/static/blog/${blog.image}`
-          : null,
-      }));
-      setBlogs(updatedData);
+      // No fallback logic needed—backend already provides full image_url
+      setBlogs(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       console.error(err);
       setBlogs([]);
@@ -58,6 +50,15 @@ const BlogAdmin = ({ userToken }) => {
 
   const handleDragOver = (e) => e.preventDefault();
 
+  const resetForm = () => {
+    setTitle("");
+    setSubtitle("");
+    setContent("");
+    setStatus("published");
+    setImageFile(null);
+    setPreviewImage(null);
+  };
+
   const handleCreate = async (e) => {
     e.preventDefault();
     if (!title || !content) return alert("Title and content are required");
@@ -78,10 +79,6 @@ const BlogAdmin = ({ userToken }) => {
         },
       });
       const newBlog = res.data.post || res.data;
-      // Set image_url correctly for static fallback
-      if (newBlog.image && !newBlog.image_url) {
-        newBlog.image_url = `${import.meta.env.VITE_API_BASE_URL}/static/blog/${newBlog.image}`;
-      }
       setBlogs((prev) => [newBlog, ...prev]);
       resetForm();
       setShowModal(false);
@@ -91,15 +88,6 @@ const BlogAdmin = ({ userToken }) => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const resetForm = () => {
-    setTitle("");
-    setSubtitle("");
-    setContent("");
-    setStatus("published");
-    setImageFile(null);
-    setPreviewImage(null);
   };
 
   const handleDelete = async (blog) => {
@@ -229,7 +217,6 @@ const BlogAdmin = ({ userToken }) => {
         {blogs.map((blog) => {
           const blogId = String(blog._id);
           const imageUrl = blog.image_url || "";
-          const subtitleText = blog.subtitle || "";
           const statusText = blog.status?.toUpperCase() || "DRAFT";
 
           return (
@@ -246,8 +233,8 @@ const BlogAdmin = ({ userToken }) => {
               )}
               <div className="p-4 flex flex-col flex-1">
                 <h2 className="font-semibold text-xl mb-1">{blog.title}</h2>
-                {subtitleText && (
-                  <p className="text-gray-600 text-sm mb-3">{subtitleText}</p>
+                {blog.subtitle && (
+                  <p className="text-gray-600 text-sm mb-3">{blog.subtitle}</p>
                 )}
                 <div className="flex justify-between items-center mt-auto gap-2">
                   <span

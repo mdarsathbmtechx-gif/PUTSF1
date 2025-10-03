@@ -7,7 +7,7 @@ const BlogHome = () => {
   const [loading, setLoading] = useState(true);
 
   const API_URL = `${import.meta.env.VITE_API_BASE_URL}/blog/posts/`;
-  const MEDIA_URL = import.meta.env.VITE_MEDIA_BASE_URL;
+  const MEDIA_URL = import.meta.env.VITE_MEDIA_BASE_URL; // e.g., https://putsf1.onrender.com/media/
 
   const fetchBlogs = async () => {
     try {
@@ -27,6 +27,7 @@ const BlogHome = () => {
     fetchBlogs();
   }, []);
 
+  // Ensures all images load over HTTPS
   const getImageUrl = (imgPath) => {
     if (!imgPath) return null;
     return imgPath.startsWith("http") ? imgPath : `${MEDIA_URL}${imgPath}`;
@@ -77,7 +78,7 @@ const BlogHome = () => {
                         <p className="text-gray-600 mb-2">{blog.subtitle}</p>
                       )}
                       <p className="text-gray-700">
-                        {blog.content && blog.content.length > 120
+                        {blog.content?.length > 120
                           ? blog.content.substring(0, 120) + "..."
                           : blog.content}
                       </p>
@@ -116,4 +117,3 @@ const BlogHome = () => {
 };
 
 export default BlogHome;
-
