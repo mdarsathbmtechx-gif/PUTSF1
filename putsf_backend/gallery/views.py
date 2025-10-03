@@ -1,4 +1,3 @@
-# gallery/views.py
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -8,7 +7,6 @@ from putsf_backend.mongo import db
 from django.utils import timezone
 from bson.objectid import ObjectId
 import os
-from django.conf import settings
 
 class GalleryImageAPIView(APIView):
     parser_classes = (MultiPartParser, FormParser)
@@ -18,21 +16,31 @@ class GalleryImageAPIView(APIView):
         GET all images or a single image by ID
         """
         images_collection = db["gallery_images"]
-
         try:
             if mongo_id:
-                image = images_collection.find_one({"_id": ObjectId(mongo_id)})
+                try:
+                    image = images_collection.find_one({"_id": ObjectId(mongo_id)})
+                except Exception:
+                    return Response({"error": "Invalid ID format"}, status=status.HTTP_400_BAD_REQUEST)
+
                 if not image:
                     return Response({"error": "Image not found"}, status=status.HTTP_404_NOT_FOUND)
+                
                 image["_id"] = str(image["_id"])
-                return Response(image)
+                return Response(image, status=status.HTTP_200_OK)
+
             else:
                 images = list(images_collection.find({}).sort("created_at", -1))
                 for img in images:
                     img["_id"] = str(img["_id"])
-                return Response(images)
+                    # Optional: ensure 'created_at' exists
+                    if "created_at" not in img:
+                        img["created_at"] = None
+                return Response(images, status=status.HTTP_200_OK)
+
         except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            print("Gallery GET error:", str(e))
+            return Response({"error": "Failed to fetch images"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def post(self, request):
         """
@@ -60,6 +68,7 @@ class GalleryImageAPIView(APIView):
                 for chunk in image_file.chunks():
                     f.write(chunk)
         except Exception as e:
+            print("POST file save error:", str(e))
             return Response({"error": f"Failed to save file: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         # Build absolute URL
@@ -71,7 +80,11 @@ class GalleryImageAPIView(APIView):
             "image_url": full_url,
             "created_at": timezone.now().isoformat()
         }
-        result = images_collection.insert_one(data)
+        try:
+            result = images_collection.insert_one(data)
+        except Exception as e:
+            print("POST MongoDB insert error:", str(e))
+            return Response({"error": "Failed to save image metadata"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response(
             {
@@ -89,15 +102,19 @@ class GalleryImageAPIView(APIView):
         images_collection = db["gallery_images"]
 
         try:
-            image = images_collection.find_one({"_id": ObjectId(mongo_id)})
+            try:
+                image = images_collection.find_one({"_id": ObjectId(mongo_id)})
+            except Exception:
+                return Response({"error": "Invalid ID format"}, status=status.HTTP_400_BAD_REQUEST)
+
             if not image:
                 return Response({"error": "Image not found"}, status=status.HTTP_404_NOT_FOUND)
 
             # Delete file from media
             image_url = image.get("image_url")
             if image_url:
-                relative_path = image_url.replace(request.build_absolute_uri("/"), "")
-                file_path = os.path.join(settings.BASE_DIR, relative_path)
+                filename = os.path.basename(image_url)
+                file_path = os.path.join(settings.MEDIA_ROOT, "gallery", filename)
                 if os.path.exists(file_path):
                     os.remove(file_path)
 
@@ -107,4 +124,5 @@ class GalleryImageAPIView(APIView):
             return Response({"message": "Image deleted successfully!"}, status=status.HTTP_200_OK)
 
         except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            print("DELETE error:", str(e))
+            return Response({"error": "Failed to delete image"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
