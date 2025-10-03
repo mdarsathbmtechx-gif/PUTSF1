@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # -----------------------------
-# Load environment variables first
+# Load environment variables
 # -----------------------------
 load_dotenv(BASE_DIR / ".env")           # main .env
 load_dotenv(BASE_DIR / ".env.local", override=True)  # local overrides if exists
@@ -27,12 +27,12 @@ RENDER_EXTERNAL_HOSTNAME = os.getenv("RENDER_EXTERNAL_HOSTNAME")
 
 ALLOWED_HOSTS = [
     "putsf1.onrender.com",            # backend domain
-    "putsf1-frontend.onrender.com",   # vercel frontend domain
+    "putsf1-frontend.onrender.com",   # frontend domain
     "localhost",
     "127.0.0.1",
 ]
 
-if RENDER_EXTERNAL_HOSTNAME:  # Render injects this automatically
+if RENDER_EXTERNAL_HOSTNAME:  
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
 # -----------------------------
@@ -101,7 +101,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'putsf_backend.wsgi.application'
 
 # -----------------------------
-# SQLite fallback
+# Database
 # -----------------------------
 DATABASES = {
     'default': {
@@ -119,16 +119,12 @@ MONGO_DB_NAME = os.getenv("MONGO_DB_NAME")
 _db = None
 
 def get_db():
-    """
-    Returns a MongoDB database connection.
-    Connects on first call, reuses connection afterward.
-    """
     global _db
     if _db is None:
         if MONGO_URI and MONGO_DB_NAME:
             try:
                 client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
-                client.admin.command('ping')  # Test connection
+                client.admin.command('ping')
                 _db = client[MONGO_DB_NAME]
                 if DEBUG:
                     print(f"✅ Connected to MongoDB Atlas: {MONGO_DB_NAME}")
@@ -162,16 +158,20 @@ USE_TZ = True
 # -----------------------------
 # Static & Media
 # -----------------------------
+# Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_DIRS = [
+    BASE_DIR / "putsf_backend" / "static",  # point to your static folder
+]
+
 
 MEDIA_URL = '/media/'
 
-if not DEBUG:
-    MEDIA_ROOT = '/media'   # Render persistent disk mount
+# ✅ Media root setup for local and Render production
+if DEBUG:
+    MEDIA_ROOT = BASE_DIR / 'media'
 else:
-    MEDIA_ROOT = BASE_DIR / 'media'   # local dev
+    MEDIA_ROOT = '/media'  # Make sure Render has persistent disk mounted at /media
 
 # -----------------------------
 # CORS
@@ -198,10 +198,10 @@ REST_FRAMEWORK = {
 APPEND_SLASH = True
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-from django.conf import settings
-
-# Use Render domain in build_absolute_uri
-if not settings.DEBUG:
+# -----------------------------
+# Site domain
+# -----------------------------
+if not DEBUG:
     SITE_DOMAIN = "https://putsf1.onrender.com"
 else:
     SITE_DOMAIN = "http://127.0.0.1:8000"

@@ -23,7 +23,17 @@ const BlogAdmin = ({ userToken }) => {
       const res = await axios.get(API_URL, {
         headers: { Authorization: `Token ${userToken}` },
       });
-      setBlogs(Array.isArray(res.data) ? res.data : []);
+      // Ensure image_url fallback works for static folder
+      const data = Array.isArray(res.data) ? res.data : [];
+      const updatedData = data.map((blog) => ({
+        ...blog,
+        image_url: blog.image_url
+          ? blog.image_url
+          : blog.image
+          ? `${import.meta.env.VITE_API_BASE_URL}/static/blog/${blog.image}`
+          : null,
+      }));
+      setBlogs(updatedData);
     } catch (err) {
       console.error(err);
       setBlogs([]);
@@ -50,8 +60,7 @@ const BlogAdmin = ({ userToken }) => {
 
   const handleCreate = async (e) => {
     e.preventDefault();
-    if (!title || !content || !imageFile)
-      return alert("Title, content, and image are required");
+    if (!title || !content) return alert("Title and content are required");
 
     setLoading(true);
     const formData = new FormData();
@@ -59,7 +68,7 @@ const BlogAdmin = ({ userToken }) => {
     formData.append("subtitle", subtitle);
     formData.append("content", content);
     formData.append("status", status);
-    formData.append("image", imageFile);
+    if (imageFile) formData.append("image", imageFile);
 
     try {
       const res = await axios.post(API_URL, formData, {
@@ -69,6 +78,10 @@ const BlogAdmin = ({ userToken }) => {
         },
       });
       const newBlog = res.data.post || res.data;
+      // Set image_url correctly for static fallback
+      if (newBlog.image && !newBlog.image_url) {
+        newBlog.image_url = `${import.meta.env.VITE_API_BASE_URL}/static/blog/${newBlog.image}`;
+      }
       setBlogs((prev) => [newBlog, ...prev]);
       resetForm();
       setShowModal(false);
@@ -197,7 +210,6 @@ const BlogAdmin = ({ userToken }) => {
                 id="fileInput"
                 className="hidden"
                 onChange={handleImageChange}
-                required
               />
 
               <button
@@ -216,7 +228,7 @@ const BlogAdmin = ({ userToken }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-h-[70vh] overflow-y-auto">
         {blogs.map((blog) => {
           const blogId = String(blog._id);
-          const imageUrl = blog.image_url || blog.image || "";
+          const imageUrl = blog.image_url || "";
           const subtitleText = blog.subtitle || "";
           const statusText = blog.status?.toUpperCase() || "DRAFT";
 
@@ -234,7 +246,9 @@ const BlogAdmin = ({ userToken }) => {
               )}
               <div className="p-4 flex flex-col flex-1">
                 <h2 className="font-semibold text-xl mb-1">{blog.title}</h2>
-                {subtitleText && <p className="text-gray-600 text-sm mb-3">{subtitleText}</p>}
+                {subtitleText && (
+                  <p className="text-gray-600 text-sm mb-3">{subtitleText}</p>
+                )}
                 <div className="flex justify-between items-center mt-auto gap-2">
                   <span
                     className={`text-xs font-semibold px-2 py-1 rounded ${

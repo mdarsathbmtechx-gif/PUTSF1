@@ -1,6 +1,9 @@
 from django.db import models
 from django.conf import settings
 from django.utils.text import slugify
+from django.core.files.storage import FileSystemStorage
+
+static_storage = FileSystemStorage(location=settings.BASE_DIR / "putsf_backend" / "Static")
 
 class Blog(models.Model):
     title = models.CharField(max_length=255)

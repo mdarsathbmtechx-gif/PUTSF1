@@ -17,7 +17,7 @@ ENV/
 *.pyc
 *.sqlite3
 db.sqlite3
-media/
+# media/        <-- temporarily comment this to add old images
 staticfiles/
 
 # Environment variables
@@ -37,7 +37,6 @@ staticfiles/
 *.pem
 *.key
 
-
-
+# Frontend
 client/.env
 client/.env.local

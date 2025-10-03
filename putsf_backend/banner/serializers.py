@@ -8,9 +8,9 @@ class BannerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Banner
-        fields = ['id', 'title', 'subtitle', 'image', 'image_url']
+        fields = ['_id', 'title', 'image', 'image_url', 'created_at']
 
     def get_image_url(self, obj):
         if obj.image:
-            return f"{settings.BASE_URL}/media/{obj.image.name}"
-        return ""
+            return f"{settings.BASE_URL}{settings.MEDIA_URL}banner/{obj.image}"
+        return None
