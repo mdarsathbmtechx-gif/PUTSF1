@@ -11,5 +11,5 @@ class BlogSerializer(serializers.ModelSerializer):
 
     def get_image_url(self, obj):
         if obj.image:
-            return static(f'blog/{obj.image.name.split("/")[-1]}')  # just the filename
+            return static(f'blog/{obj.image}')  # serve from static folder
         return None

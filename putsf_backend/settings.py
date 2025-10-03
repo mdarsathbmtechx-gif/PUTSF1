@@ -173,13 +173,6 @@ else:
     STATIC_ROOT = BASE_DIR / "staticfiles"  # production (Render)
 
 
-MEDIA_URL = '/media/'
-
-# ✅ Media root setup for local and Render production
-if DEBUG:
-    MEDIA_ROOT = BASE_DIR / 'media'
-else:
-    MEDIA_ROOT = '/media'  # Make sure Render has persistent disk mounted at /media
 
 # -----------------------------
 # CORS
