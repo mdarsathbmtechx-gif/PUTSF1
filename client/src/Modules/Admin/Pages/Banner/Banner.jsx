@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 
-// Elegant Banner Card
+// Banner Card Component
 const BannerCard = ({ banner, onDelete, onUpdate }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(banner.title);
@@ -12,10 +12,12 @@ const BannerCard = ({ banner, onDelete, onUpdate }) => {
     setIsEditing(false);
   };
 
+  const MEDIA_URL = import.meta.env.VITE_MEDIA_BASE_URL;
+
   return (
     <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
       <img
-        src={banner.image_url || banner.image}
+        src={banner.image_url ? banner.image_url : `${MEDIA_URL}${banner.image}`}
         alt={banner.title}
         className="w-full h-56 object-cover"
       />
@@ -74,6 +76,7 @@ const BannerCard = ({ banner, onDelete, onUpdate }) => {
   );
 };
 
+// Admin Banner Management
 const BannerAdmin = () => {
   const [banners, setBanners] = useState([]);
   const [title, setTitle] = useState("");
@@ -89,7 +92,6 @@ const BannerAdmin = () => {
 
   const API_URL = `${import.meta.env.VITE_API_BASE_URL}/banners/`;
 
-  // Fetch banners
   const fetchBanners = async () => {
     setFetching(true);
     setError("");
@@ -108,29 +110,23 @@ const BannerAdmin = () => {
     fetchBanners();
   }, []);
 
-  // Drag & drop handlers
   useEffect(() => {
     const div = dropRef.current;
-
     const handleDrop = (e) => {
       e.preventDefault();
       const droppedFile = e.dataTransfer.files[0];
       setFile(droppedFile);
       setPreview(URL.createObjectURL(droppedFile));
     };
-
     const handleDragOver = (e) => e.preventDefault();
-
     div.addEventListener("drop", handleDrop);
     div.addEventListener("dragover", handleDragOver);
-
     return () => {
       div.removeEventListener("drop", handleDrop);
       div.removeEventListener("dragover", handleDragOver);
     };
   }, []);
 
-  // File change handler
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     setFile(selectedFile);
@@ -138,7 +134,6 @@ const BannerAdmin = () => {
     else setPreview(null);
   };
 
-  // Upload banner
   const handleUpload = async (e) => {
     e.preventDefault();
     if (!file || !title) {
@@ -162,7 +157,6 @@ const BannerAdmin = () => {
           setProgress(Math.round((progressEvent.loaded * 100) / progressEvent.total));
         },
       });
-
       setTitle("");
       setSubtitle("");
       setFile(null);
@@ -177,7 +171,6 @@ const BannerAdmin = () => {
     }
   };
 
-  // Delete banner
   const handleDelete = async (_id) => {
     if (!window.confirm("Are you sure you want to delete this banner?")) return;
     setBanners((prev) => prev.filter((b) => b._id !== _id));
@@ -190,7 +183,6 @@ const BannerAdmin = () => {
     }
   };
 
-  // Update banner (inline edit)
   const handleUpdate = async (_id, data) => {
     try {
       await axios.patch(`${API_URL}${_id}/`, data);
@@ -210,7 +202,6 @@ const BannerAdmin = () => {
 
       {error && <div className="mb-4 text-red-600 font-medium">{error}</div>}
 
-      {/* Upload Form */}
       <form
         onSubmit={handleUpload}
         className="mb-6 flex flex-col md:flex-row gap-4 items-center"
@@ -247,7 +238,6 @@ const BannerAdmin = () => {
         </button>
       </form>
 
-      {/* Upload Progress */}
       {loading && progress > 0 && (
         <div className="w-full bg-gray-200 h-2 rounded mb-4 overflow-hidden">
           <div
@@ -257,20 +247,14 @@ const BannerAdmin = () => {
         </div>
       )}
 
-      {/* Preview */}
       {preview && (
         <div className="mb-6 flex justify-center">
           <div className="border rounded-lg overflow-hidden shadow-md">
-            <img
-              src={preview}
-              alt="Preview"
-              className="w-64 h-48 object-cover"
-            />
+            <img src={preview} alt="Preview" className="w-64 h-48 object-cover" />
           </div>
         </div>
       )}
 
-      {/* Banner List */}
       {fetching ? (
         <p className="text-gray-500">Loading banners...</p>
       ) : (

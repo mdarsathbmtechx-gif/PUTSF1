@@ -4,8 +4,8 @@ import axios from "axios";
 const Banner = () => {
   const [banners, setBanners] = useState([]);
   const API_URL = `${import.meta.env.VITE_API_BASE_URL}/banners/`;
+  const MEDIA_URL = import.meta.env.VITE_MEDIA_BASE_URL;
 
-  // Fetch banners from backend
   const fetchBanners = async () => {
     try {
       const res = await axios.get(API_URL);
@@ -26,11 +26,10 @@ const Banner = () => {
           banners.map((banner) => (
             <div key={banner._id} className="w-full relative mb-6">
               <img
-                src={banner.image_url} // <-- fixed property
+                src={banner.image_url ? banner.image_url : `${MEDIA_URL}${banner.image}`}
                 alt={banner.title}
                 className="w-full object-contain rounded-xl shadow-lg animate-fadeZoom animate-float"
               />
-              {/* Optional overlay for title/subtitle */}
               <div className="absolute bottom-4 left-4 text-white">
                 <h2 className="text-2xl font-bold">{banner.title}</h2>
                 {banner.subtitle && <p className="text-lg">{banner.subtitle}</p>}

@@ -1,17 +1,14 @@
 from rest_framework import serializers
-from .models import Banner
+from django.conf import settings
 
 class BannerSerializer(serializers.ModelSerializer):
     image_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Banner
-        fields = ['id', 'title', 'subtitle', 'image', 'image_url', 'created_at']
+        fields = ['id', 'title', 'subtitle', 'image', 'image_url']
 
     def get_image_url(self, obj):
-        request = self.context.get('request')
-        if obj.image and request:
-            return request.build_absolute_uri(obj.image.url)
-        elif obj.image:
-            return obj.image.url
-        return None
+        if obj.image:
+            return f"{settings.BASE_URL}/media/{obj.image.name}"
+        return ""
