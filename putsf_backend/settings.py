@@ -160,9 +160,17 @@ USE_TZ = True
 # -----------------------------
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
+
+# Your app-level static files for development
 STATICFILES_DIRS = [
-    BASE_DIR / "putsf_backend" / "static",  # point to your static folder
+    BASE_DIR / "putsf_backend" / "static",
 ]
+
+# Where collectstatic will put all static files for production
+if DEBUG:
+    STATIC_ROOT = BASE_DIR / "staticfiles"  # local development
+else:
+    STATIC_ROOT = BASE_DIR / "staticfiles"  # production (Render)
 
 
 MEDIA_URL = '/media/'
