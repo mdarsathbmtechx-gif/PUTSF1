@@ -24,8 +24,16 @@ DEBUG = os.getenv("DEBUG", "False").lower() in ["true", "1", "yes"]
 
 # ALLOWED_HOSTS
 RENDER_EXTERNAL_HOSTNAME = os.getenv("RENDER_EXTERNAL_HOSTNAME")
-ALLOWED_HOSTS = [RENDER_EXTERNAL_HOSTNAME] if RENDER_EXTERNAL_HOSTNAME else os.getenv(
-    "ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
+
+ALLOWED_HOSTS = [
+    "putsf1.onrender.com",            # backend domain
+    "putsf1-frontend.onrender.com",   # vercel frontend domain
+    "localhost",
+    "127.0.0.1",
+]
+
+if RENDER_EXTERNAL_HOSTNAME:  # Render injects this automatically
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
 # -----------------------------
 # Installed Apps
@@ -159,16 +167,16 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+
+if not DEBUG:
+    MEDIA_ROOT = '/media'   # Render persistent disk mount
+else:
+    MEDIA_ROOT = BASE_DIR / 'media'   # local dev
 
 # -----------------------------
 # CORS
 # -----------------------------
 CORS_ALLOW_ALL_ORIGINS = True
-
-ALLOWED_HOSTS = ["*"]
-
-
 
 # -----------------------------
 # Custom User Model
@@ -190,7 +198,6 @@ REST_FRAMEWORK = {
 APPEND_SLASH = True
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
 from django.conf import settings
 
 # Use Render domain in build_absolute_uri
@@ -199,6 +206,4 @@ if not settings.DEBUG:
 else:
     SITE_DOMAIN = "http://127.0.0.1:8000"
 
-
-BASE_URL = "https://putsf1.onrender.com"
-
+BASE_URL = SITE_DOMAIN
