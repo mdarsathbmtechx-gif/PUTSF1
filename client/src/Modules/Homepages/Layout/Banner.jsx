@@ -10,6 +10,8 @@ const Banner = () => {
     try {
       const res = await axios.get(API_URL);
       setBanners(res.data);
+      console.log(res.data,);
+      
     } catch (err) {
       console.error("Failed to fetch banners:", err);
     }
