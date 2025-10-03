@@ -12,6 +12,4 @@ urlpatterns = [
     path("api/", include("putsf_backend.banner.urls")),
     path("api/blog/", include("putsf_backend.blog.urls")),
 ]
-
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
