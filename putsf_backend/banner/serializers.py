@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from django.conf import settings
+from .models import Banner
+
 
 class BannerSerializer(serializers.ModelSerializer):
     image_url = serializers.SerializerMethodField()
