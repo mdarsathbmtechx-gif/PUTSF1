@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.templatetags.static import static
 from rest_framework import serializers
 from .models import Blog
@@ -11,5 +12,6 @@ class BlogSerializer(serializers.ModelSerializer):
 
     def get_image_url(self, obj):
         if obj.image:
-            return static(f'blog/{obj.image}')  # serve from static folder
+            relative_url = static(f'blog/{obj.image.name}')
+            return f"{settings.BASE_URL}{relative_url}"  # full URL for frontend
         return None

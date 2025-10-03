@@ -12,7 +12,6 @@ const BlogAdmin = ({ userToken }) => {
   const [previewImage, setPreviewImage] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Make sure this points to your backend production URL
   const API_URL = import.meta.env.VITE_API_BASE_URL + "/blog/posts/";
 
   useEffect(() => {
@@ -24,7 +23,6 @@ const BlogAdmin = ({ userToken }) => {
       const res = await axios.get(API_URL, {
         headers: { Authorization: `Token ${userToken}` },
       });
-      // No fallback logic needed—backend already provides full image_url
       setBlogs(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       console.error(err);
@@ -134,7 +132,6 @@ const BlogAdmin = ({ userToken }) => {
         + Create New Blog
       </button>
 
-      {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-3xl p-6 relative">
@@ -212,7 +209,6 @@ const BlogAdmin = ({ userToken }) => {
         </div>
       )}
 
-      {/* Blogs Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-h-[70vh] overflow-y-auto">
         {blogs.map((blog) => {
           const blogId = String(blog._id);

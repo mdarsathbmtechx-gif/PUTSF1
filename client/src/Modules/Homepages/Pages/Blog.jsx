@@ -7,7 +7,6 @@ const BlogHome = () => {
   const [loading, setLoading] = useState(true);
 
   const API_URL = `${import.meta.env.VITE_API_BASE_URL}/blog/posts/`;
-  const MEDIA_URL = import.meta.env.VITE_MEDIA_BASE_URL; // e.g., https://putsf1.onrender.com/media/
 
   const fetchBlogs = async () => {
     try {
@@ -16,7 +15,7 @@ const BlogHome = () => {
       const publishedBlogs = data.filter((b) => b.status === "published");
       setBlogs(publishedBlogs);
     } catch (err) {
-      console.error("Failed to fetch blogs:", err.response || err);
+      console.error("Failed to fetch blogs:", err);
       setBlogs([]);
     } finally {
       setLoading(false);
@@ -26,12 +25,6 @@ const BlogHome = () => {
   useEffect(() => {
     fetchBlogs();
   }, []);
-
-  // Ensures all images load over HTTPS
-  const getImageUrl = (imgPath) => {
-    if (!imgPath) return null;
-    return imgPath.startsWith("http") ? imgPath : `${MEDIA_URL}${imgPath}`;
-  };
 
   if (loading) {
     return (
@@ -53,9 +46,8 @@ const BlogHome = () => {
         {blogs.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {blogs.map((blog) => {
-              const blogId =
-                typeof blog._id === "object" ? blog._id.$oid : String(blog._id);
-              const imageUrl = getImageUrl(blog.image_url || blog.image);
+              const blogId = String(blog._id);
+              const imageUrl = blog.image_url || "";
 
               return (
                 <div
@@ -78,7 +70,7 @@ const BlogHome = () => {
                         <p className="text-gray-600 mb-2">{blog.subtitle}</p>
                       )}
                       <p className="text-gray-700">
-                        {blog.content?.length > 120
+                        {blog.content && blog.content.length > 120
                           ? blog.content.substring(0, 120) + "..."
                           : blog.content}
                       </p>
