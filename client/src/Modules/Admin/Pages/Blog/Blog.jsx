@@ -4,6 +4,7 @@ import axios from "axios";
 const BlogAdmin = ({ userToken }) => {
   const [blogs, setBlogs] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [editingBlog, setEditingBlog] = useState(null);
   const [title, setTitle] = useState("");
   const [subtitle, setSubtitle] = useState("");
   const [content, setContent] = useState("");
@@ -30,6 +31,16 @@ const BlogAdmin = ({ userToken }) => {
     }
   };
 
+  const resetForm = () => {
+    setTitle("");
+    setSubtitle("");
+    setContent("");
+    setStatus("published");
+    setImageFile(null);
+    setPreviewImage(null);
+    setEditingBlog(null);
+  };
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     setImageFile(file);
@@ -40,24 +51,7 @@ const BlogAdmin = ({ userToken }) => {
     } else setPreviewImage(null);
   };
 
-  const handleDrop = (e) => {
-    e.preventDefault();
-    const file = e.dataTransfer.files[0];
-    if (file) handleImageChange({ target: { files: [file] } });
-  };
-
-  const handleDragOver = (e) => e.preventDefault();
-
-  const resetForm = () => {
-    setTitle("");
-    setSubtitle("");
-    setContent("");
-    setStatus("published");
-    setImageFile(null);
-    setPreviewImage(null);
-  };
-
-  const handleCreate = async (e) => {
+  const handleCreateOrEdit = async (e) => {
     e.preventDefault();
     if (!title || !content) return alert("Title and content are required");
 
@@ -70,26 +64,37 @@ const BlogAdmin = ({ userToken }) => {
     if (imageFile) formData.append("image", imageFile);
 
     try {
-      const res = await axios.post(API_URL, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Token ${userToken}`,
-        },
-      });
-      const newBlog = res.data.post || res.data;
-      setBlogs((prev) => [newBlog, ...prev]);
+      let res;
+      if (editingBlog) {
+        // Edit blog
+        res = await axios.put(`${API_URL}${editingBlog._id}/`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Token ${userToken}`,
+          },
+        });
+      } else {
+        // Create blog
+        res = await axios.post(API_URL, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Token ${userToken}`,
+          },
+        });
+      }
+
+      fetchBlogs();
       resetForm();
       setShowModal(false);
     } catch (err) {
       console.error(err);
-      alert("Failed to create blog.");
+      alert("Failed to save blog.");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDelete = async (blog) => {
-    const blogId = String(blog._id);
+  const handleDelete = async (blogId) => {
     if (!window.confirm("Are you sure you want to delete this blog?")) return;
 
     try {
@@ -104,21 +109,32 @@ const BlogAdmin = ({ userToken }) => {
   };
 
   const handleToggleStatus = async (blog) => {
-    const blogId = String(blog._id);
     const newStatus = blog.status === "published" ? "draft" : "published";
     try {
       await axios.patch(
-        `${API_URL}${blogId}/`,
+        `${API_URL}${blog._id}/`,
         { status: newStatus },
         { headers: { Authorization: `Token ${userToken}` } }
       );
       setBlogs((prev) =>
-        prev.map((b) => (String(b._id) === blogId ? { ...b, status: newStatus } : b))
+        prev.map((b) =>
+          String(b._id) === blog._id ? { ...b, status: newStatus } : b
+        )
       );
     } catch (err) {
       console.error(err);
       alert("Failed to update status.");
     }
+  };
+
+  const handleEdit = (blog) => {
+    setEditingBlog(blog);
+    setTitle(blog.title);
+    setSubtitle(blog.subtitle || "");
+    setContent(blog.content);
+    setStatus(blog.status);
+    setPreviewImage(blog.image_url || null);
+    setShowModal(true);
   };
 
   return (
@@ -129,20 +145,26 @@ const BlogAdmin = ({ userToken }) => {
         onClick={() => setShowModal(true)}
         className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
       >
-        + Create New Blog
+        {editingBlog ? "Edit Blog" : "+ Create New Blog"}
       </button>
 
+      {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-3xl p-6 relative">
             <button
-              onClick={() => setShowModal(false)}
+              onClick={() => {
+                setShowModal(false);
+                resetForm();
+              }}
               className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-2xl font-bold"
             >
               &times;
             </button>
-            <h2 className="text-2xl font-semibold mb-4">Create Blog</h2>
-            <form onSubmit={handleCreate} className="space-y-4">
+            <h2 className="text-2xl font-semibold mb-4">
+              {editingBlog ? "Edit Blog" : "Create Blog"}
+            </h2>
+            <form onSubmit={handleCreateOrEdit} className="space-y-4">
               <input
                 type="text"
                 placeholder="Title"
@@ -175,8 +197,6 @@ const BlogAdmin = ({ userToken }) => {
               </select>
 
               <div
-                onDrop={handleDrop}
-                onDragOver={handleDragOver}
                 className="w-full h-40 border-2 border-dashed border-gray-300 rounded flex items-center justify-center text-gray-500 cursor-pointer hover:border-blue-400 transition"
                 onClick={() => document.getElementById("fileInput").click()}
               >
@@ -187,7 +207,7 @@ const BlogAdmin = ({ userToken }) => {
                     className="w-full h-full object-cover rounded transition-transform duration-300 hover:scale-105"
                   />
                 ) : (
-                  "Drag & Drop an image here or click to select"
+                  "Click to select image"
                 )}
               </div>
               <input
@@ -202,28 +222,26 @@ const BlogAdmin = ({ userToken }) => {
                 disabled={loading}
                 className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition"
               >
-                {loading ? "Uploading..." : "Create Blog"}
+                {loading ? "Saving..." : editingBlog ? "Update Blog" : "Create Blog"}
               </button>
             </form>
           </div>
         </div>
       )}
 
+      {/* Blogs Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-h-[70vh] overflow-y-auto">
         {blogs.map((blog) => {
-          const blogId = String(blog._id);
-          const imageUrl = blog.image_url || "";
           const statusText = blog.status?.toUpperCase() || "DRAFT";
-
           return (
             <div
-              key={blogId}
+              key={blog._id}
               className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-2xl transition-shadow transform hover:-translate-y-1 flex flex-col"
             >
-              {imageUrl && (
+              {blog.image_url && (
                 <img
-                  src={imageUrl}
-                  alt={blog.title || "Blog Image"}
+                  src={blog.image_url}
+                  alt={blog.title}
                   className="w-full h-52 object-cover transition-transform duration-300 hover:scale-105"
                 />
               )}
@@ -250,7 +268,13 @@ const BlogAdmin = ({ userToken }) => {
                       {blog.status === "published" ? "Set Draft" : "Publish"}
                     </button>
                     <button
-                      onClick={() => handleDelete(blog)}
+                      onClick={() => handleEdit(blog)}
+                      className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-sm transition"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(blog._id)}
                       className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-sm transition"
                     >
                       Delete

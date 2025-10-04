@@ -6,7 +6,7 @@ const BlogHome = () => {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const API_URL = `${import.meta.env.VITE_API_BASE_URL}/blog/posts/`;
+  const API_URL = `${import.meta.env.VITE_API_BASE_URL}/blog/posts/`; // e.g., http://127.0.0.1:8000/api/blog/posts/
 
   const fetchBlogs = async () => {
     try {
@@ -15,7 +15,7 @@ const BlogHome = () => {
       const publishedBlogs = data.filter((b) => b.status === "published");
       setBlogs(publishedBlogs);
     } catch (err) {
-      console.error("Failed to fetch blogs:", err);
+      console.error("Failed to fetch blogs:", err.response || err);
       setBlogs([]);
     } finally {
       setLoading(false);
@@ -46,8 +46,9 @@ const BlogHome = () => {
         {blogs.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {blogs.map((blog) => {
-              const blogId = String(blog._id);
-              const imageUrl = blog.image_url || "";
+              const blogId =
+                typeof blog._id === "object" ? blog._id.$oid : String(blog._id);
+              const imageUrl = blog.image_url || null;
 
               return (
                 <div
@@ -77,11 +78,8 @@ const BlogHome = () => {
                     </div>
                     <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-100">
                       <div className="text-sm text-gray-500">
-                        {blog.author && <span>By {blog.author}</span>}
                         {blog.created_at && (
                           <span>
-                            {" "}
-                            •{" "}
                             {new Date(blog.created_at).toLocaleDateString()}
                           </span>
                         )}

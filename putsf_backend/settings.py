@@ -159,18 +159,25 @@ USE_TZ = True
 # Static & Media
 # -----------------------------
 # Static files (CSS, JavaScript, Images)
+# -----------------------------
+# Static & Media
+# -----------------------------
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "putsf_backend", "static")]
+STATIC_ROOT = BASE_DIR / "staticfiles"  # collectstatic output
 
-# Your app-level static files for development
-STATICFILES_DIRS = [
-    BASE_DIR / "putsf_backend" / "static",
-]
+# Media is not used on free Render/Vercel (uploads not supported)
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
-# Where collectstatic will put all static files for production
-if DEBUG:
-    STATIC_ROOT = BASE_DIR / "staticfiles"  # local development
+# Full base URL for building absolute URLs
+if not DEBUG:
+    SITE_DOMAIN = "https://putsf1.onrender.com"
 else:
-    STATIC_ROOT = BASE_DIR / "staticfiles"  # production (Render)
+    SITE_DOMAIN = "http://127.0.0.1:8000"
+
+BASE_URL = SITE_DOMAIN
+
 
 
 
