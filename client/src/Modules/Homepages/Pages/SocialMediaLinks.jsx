@@ -21,38 +21,40 @@ const SocialMediaLinks = () => {
   ];
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1 style={{ textAlign: "center", marginBottom: "20px" }}>My Facebook Links</h1>
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
-        gap: "20px"
-      }}>
-        {facebookLinks.map((link, index) => (
-          <a 
-            key={index} 
-            href={link.url} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            style={{
-              textDecoration: "none",
-              color: "black",
-              borderRadius: "10px",
-              overflow: "hidden",
-              boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
-              transition: "transform 0.2s, box-shadow 0.2s"
-            }}
-          >
-            <div style={{ position: "relative" }}>
-              <img 
-                src={link.thumbnail} 
-                alt={link.label} 
-                style={{ width: "100%", height: "auto", display: "block" }} 
-              />
-            </div>
-            <p style={{ padding: "10px", fontWeight: "bold", textAlign: "center" }}>{link.label}</p>
-          </a>
-        ))}
+    <div style={{ display: "flex", justifyContent: "center", padding: "40px 20px" }}>
+      <div style={{ maxWidth: "1200px", width: "100%" }}>
+        <h1 style={{ textAlign: "center", marginBottom: "40px" }}>My Facebook Links</h1>
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
+          gap: "20px"
+        }}>
+          {facebookLinks.map((link, index) => (
+            <a 
+              key={index} 
+              href={link.url} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              style={{
+                textDecoration: "none",
+                color: "black",
+                borderRadius: "10px",
+                overflow: "hidden",
+                boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+                transition: "transform 0.2s, box-shadow 0.2s"
+              }}
+            >
+              <div style={{ position: "relative" }}>
+                <img 
+                  src={link.thumbnail} 
+                  alt={link.label} 
+                  style={{ width: "100%", height: "auto", display: "block" }} 
+                />
+              </div>
+              <p style={{ padding: "10px", fontWeight: "bold", textAlign: "center" }}>{link.label}</p>
+            </a>
+          ))}
+        </div>
       </div>
     </div>
   );
