@@ -1,4 +1,3 @@
-// SocialMediaLinks.jsx
 import React, { useEffect, useState } from "react";
 
 const SocialMediaLinks = () => {
@@ -26,7 +25,6 @@ const SocialMediaLinks = () => {
     }
   }, []);
 
-  // Parse embeds whenever SDK is loaded or posts change
   useEffect(() => {
     if (sdkLoaded && window.FB) {
       window.FB.XFBML.parse();
@@ -36,7 +34,7 @@ const SocialMediaLinks = () => {
   return (
     <div style={styles.container}>
       <div style={styles.content}>
-        <h1 style={styles.heading}>My Facebook Posts</h1>
+        <h1 style={styles.heading}>Follow Us on Facebook</h1>
         <div style={styles.grid}>
           {facebookPosts.map((postUrl, index) => (
             <div
@@ -44,7 +42,7 @@ const SocialMediaLinks = () => {
               className="fb-post"
               data-href={postUrl}
               data-width="500"
-              style={styles.post}
+              style={styles.card}
             >
               {!sdkLoaded && (
                 <div style={styles.placeholder}>
@@ -59,24 +57,25 @@ const SocialMediaLinks = () => {
   );
 };
 
-// Inline styles for simplicity
+// Styles
 const styles = {
   container: {
     display: "flex",
     justifyContent: "center",
     padding: "60px 20px",
-    backgroundColor: "#f9f9f9",
+    backgroundColor: "#f4f4f9",
     minHeight: "100vh",
   },
   content: {
-    maxWidth: "900px",
+    maxWidth: "1000px",
     width: "100%",
   },
   heading: {
     textAlign: "center",
     marginBottom: "50px",
     fontSize: "2.5rem",
-    color: "#333",
+    color: "#1a1a1a",
+    fontWeight: "700",
     fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
   },
   grid: {
@@ -84,21 +83,33 @@ const styles = {
     gridTemplateColumns: "1fr",
     gap: "40px",
   },
-  post: {
+  card: {
     margin: "0 auto",
+    borderRadius: "12px",
+    overflow: "hidden",
+    boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
     transition: "transform 0.3s, box-shadow 0.3s",
     cursor: "pointer",
   },
   placeholder: {
-    height: "300px",
+    height: "350px",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#e0e0e0",
     color: "#555",
     fontSize: "1rem",
-    borderRadius: "10px",
   },
 };
+
+// Responsive adjustments with media queries
+const mediaQuery = window.matchMedia("(min-width: 768px)");
+if (mediaQuery.matches) {
+  styles.grid.gridTemplateColumns = "1fr 1fr";
+}
+const largeQuery = window.matchMedia("(min-width: 1200px)");
+if (largeQuery.matches) {
+  styles.grid.gridTemplateColumns = "1fr 1fr 1fr";
+}
 
 export default SocialMediaLinks;
