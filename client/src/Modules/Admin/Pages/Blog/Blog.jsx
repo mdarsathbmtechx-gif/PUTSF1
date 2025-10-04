@@ -64,25 +64,21 @@ const BlogAdmin = ({ userToken }) => {
     if (imageFile) formData.append("image", imageFile);
 
     try {
-      let res;
       if (editingBlog) {
-        // Edit blog
-        res = await axios.put(`${API_URL}${editingBlog._id}/`, formData, {
+        await axios.put(`${API_URL}${editingBlog._id}/`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
             Authorization: `Token ${userToken}`,
           },
         });
       } else {
-        // Create blog
-        res = await axios.post(API_URL, formData, {
+        await axios.post(API_URL, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
             Authorization: `Token ${userToken}`,
           },
         });
       }
-
       fetchBlogs();
       resetForm();
       setShowModal(false);
@@ -96,7 +92,6 @@ const BlogAdmin = ({ userToken }) => {
 
   const handleDelete = async (blogId) => {
     if (!window.confirm("Are you sure you want to delete this blog?")) return;
-
     try {
       await axios.delete(`${API_URL}${blogId}/`, {
         headers: { Authorization: `Token ${userToken}` },
@@ -105,25 +100,6 @@ const BlogAdmin = ({ userToken }) => {
     } catch (err) {
       console.error(err);
       alert("Failed to delete blog.");
-    }
-  };
-
-  const handleToggleStatus = async (blog) => {
-    const newStatus = blog.status === "published" ? "draft" : "published";
-    try {
-      await axios.patch(
-        `${API_URL}${blog._id}/`,
-        { status: newStatus },
-        { headers: { Authorization: `Token ${userToken}` } }
-      );
-      setBlogs((prev) =>
-        prev.map((b) =>
-          String(b._id) === blog._id ? { ...b, status: newStatus } : b
-        )
-      );
-    } catch (err) {
-      console.error(err);
-      alert("Failed to update status.");
     }
   };
 
@@ -231,60 +207,34 @@ const BlogAdmin = ({ userToken }) => {
 
       {/* Blogs Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-h-[70vh] overflow-y-auto">
-        {blogs.map((blog) => {
-          const statusText = blog.status?.toUpperCase() || "DRAFT";
-          return (
-            <div
-              key={blog._id}
-              className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-2xl transition-shadow transform hover:-translate-y-1 flex flex-col"
-            >
-              {blog.image_url && (
-                <img
-                  src={blog.image_url}
-                  alt={blog.title}
-                  className="w-full h-52 object-cover transition-transform duration-300 hover:scale-105"
-                />
+        {blogs.map((blog) => (
+          <div
+            key={blog._id}
+            className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-2xl transition-shadow transform hover:-translate-y-1 flex flex-col"
+          >
+            {blog.image_url && (
+              <img
+                src={blog.image_url}
+                alt={blog.title}
+                className="w-full h-52 object-cover transition-transform duration-300 hover:scale-105"
+              />
+            )}
+            <div className="p-4 flex flex-col flex-1">
+              <h2 className="font-semibold text-xl mb-1">{blog.title}</h2>
+              {blog.subtitle && (
+                <p className="text-gray-600 text-sm mb-3">{blog.subtitle}</p>
               )}
-              <div className="p-4 flex flex-col flex-1">
-                <h2 className="font-semibold text-xl mb-1">{blog.title}</h2>
-                {blog.subtitle && (
-                  <p className="text-gray-600 text-sm mb-3">{blog.subtitle}</p>
-                )}
-                <div className="flex justify-between items-center mt-auto gap-2">
-                  <span
-                    className={`text-xs font-semibold px-2 py-1 rounded ${
-                      statusText === "PUBLISHED"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-gray-100 text-gray-700"
-                    }`}
-                  >
-                    {statusText}
-                  </span>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleToggleStatus(blog)}
-                      className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 text-sm transition"
-                    >
-                      {blog.status === "published" ? "Set Draft" : "Publish"}
-                    </button>
-                    <button
-                      onClick={() => handleEdit(blog)}
-                      className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-sm transition"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(blog._id)}
-                      className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-sm transition"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </div>
+              <div className="flex justify-end mt-auto">
+                <button
+                  onClick={() => handleDelete(blog._id)}
+                  className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-sm transition"
+                >
+                  Delete
+                </button>
               </div>
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
     </div>
   );

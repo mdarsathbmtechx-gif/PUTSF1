@@ -11,7 +11,7 @@ const AdminLayout = () => {
       <Sidebar />
 
       {/* Main Content */}
-      <div className="flex-1 ml-64 p-6 bg-gray-100">
+      <div className="flex-1 md:ml-64 p-6 bg-gray-100 min-h-screen transition-all duration-300">
         <Breadcrumbs />
         <Outlet /> {/* Renders Dashboard, Banner, Gallery, etc. */}
       </div>

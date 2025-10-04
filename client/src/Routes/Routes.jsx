@@ -6,6 +6,7 @@ import { HashRouter as Router, Routes, Route, Navigate } from "react-router-dom"
 import HomepagesRoutes from "./HomepagesRoutes";
 import AdminRoutes from "./AdminRoutes";
 import Gallery from "../Modules/Homepages/Pages/Gallery";
+import BlogHome from "../Modules/Homepages/Pages/Blog";
 
 const AppRoutes = () => {
   return (
@@ -14,6 +15,8 @@ const AppRoutes = () => {
         {/* Public/Homepages routes */}
         <Route path="/*" element={<HomepagesRoutes />} />
         <Route path="/gallery" element={<Gallery />} />
+        <Route path="/blog" element={<BlogHome />} />
+
 
         {/* Admin routes */}
         <Route path="/admin/*" element={<AdminRoutes />} />

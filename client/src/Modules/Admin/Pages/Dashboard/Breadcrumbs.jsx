@@ -4,26 +4,33 @@ import { useLocation, Link } from "react-router-dom";
 
 const Breadcrumbs = () => {
   const location = useLocation();
-  let paths = location.pathname.split("/").filter((x) => x);
+  let paths = location.pathname.split("/").filter(Boolean);
 
   // Remove consecutive duplicates
   paths = paths.filter((path, index) => path !== paths[index - 1]);
 
   return (
-    <nav className="text-gray-600 text-sm mb-4">
-      <ol className="flex space-x-2">
+    <nav className="text-gray-600 text-sm mb-4 px-4 md:px-0">
+      <ol className="flex flex-wrap items-center space-x-2">
+        {/* Home Link */}
         <li>
-          <Link to="/admin/dashboard" className="text-blue-600">
+          <Link to="/admin/dashboard" className="text-blue-600 hover:underline">
             Home
           </Link>
         </li>
+
+        {/* Dynamic Breadcrumbs */}
         {paths.slice(1).map((path, index) => {
           const routeTo = "/" + paths.slice(0, index + 2).join("/");
           return (
-            <li key={routeTo} className="flex items-center">
-              <span className="mx-2">/</span>
-              <Link to={routeTo} className="capitalize text-blue-600">
-                {path}
+            <li key={routeTo} className="flex items-center space-x-2">
+              <span className="text-gray-400">/</span>
+              <Link
+                to={routeTo}
+                className="capitalize text-blue-600 hover:underline truncate max-w-xs md:max-w-full"
+                title={path}
+              >
+                {path.replace(/-/g, " ")}
               </Link>
             </li>
           );

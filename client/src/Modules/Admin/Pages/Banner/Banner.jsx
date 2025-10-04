@@ -15,7 +15,7 @@ const BannerCard = ({ banner, onDelete, onUpdate }) => {
   const MEDIA_URL = import.meta.env.VITE_MEDIA_BASE_URL;
 
   return (
-    <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
+    <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col">
       <img
         src={banner.image_url ? banner.image_url : `${MEDIA_URL}${banner.image}`}
         alt={banner.title}
@@ -28,15 +28,15 @@ const BannerCard = ({ banner, onDelete, onUpdate }) => {
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="border p-2 rounded text-gray-800 focus:outline-blue-500"
+              className="border p-2 rounded text-gray-800 focus:outline-blue-500 w-full"
             />
             <input
               type="text"
               value={subtitle}
               onChange={(e) => setSubtitle(e.target.value)}
-              className="border p-2 rounded text-gray-600 focus:outline-blue-500"
+              className="border p-2 rounded text-gray-600 focus:outline-blue-500 w-full"
             />
-            <div className="flex gap-2 mt-2">
+            <div className="flex gap-2 mt-2 flex-wrap">
               <button
                 onClick={handleSave}
                 className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition"
@@ -53,9 +53,9 @@ const BannerCard = ({ banner, onDelete, onUpdate }) => {
           </>
         ) : (
           <>
-            <h2 className="text-lg font-semibold text-gray-800">{title}</h2>
-            {subtitle && <p className="text-sm text-gray-500">{subtitle}</p>}
-            <div className="flex gap-2 mt-3">
+            <h2 className="text-lg font-semibold text-gray-800 truncate">{title}</h2>
+            {subtitle && <p className="text-sm text-gray-500 truncate">{subtitle}</p>}
+            <div className="flex gap-2 mt-3 flex-wrap">
               <button
                 onClick={() => setIsEditing(true)}
                 className="bg-yellow-400 text-white px-3 py-1 rounded hover:bg-yellow-500 transition"
@@ -197,8 +197,10 @@ const BannerAdmin = () => {
   };
 
   return (
-    <div className="p-8 bg-gray-50 min-h-screen">
-      <h1 className="text-3xl font-bold mb-8 text-gray-800">Manage Banners</h1>
+    <div className="p-4 md:p-8 bg-gray-50 min-h-screen">
+      <h1 className="text-3xl font-bold mb-6 md:mb-8 text-gray-800 text-center md:text-left">
+        Manage Banners
+      </h1>
 
       {error && <div className="mb-4 text-red-600 font-medium">{error}</div>}
 
@@ -211,20 +213,26 @@ const BannerAdmin = () => {
           placeholder="Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="border p-3 rounded-lg flex-1 shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none"
+          className="border p-3 rounded-lg flex-1 w-full shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none"
         />
         <input
           type="text"
           placeholder="Subtitle"
           value={subtitle}
           onChange={(e) => setSubtitle(e.target.value)}
-          className="border p-3 rounded-lg flex-1 shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none"
+          className="border p-3 rounded-lg flex-1 w-full shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none"
         />
         <div
           ref={dropRef}
           className="border-2 border-dashed border-gray-300 p-4 rounded-lg w-full md:w-auto text-center cursor-pointer hover:border-blue-400 hover:bg-gray-100 transition"
         >
-          <input type="file" accept="image/*" onChange={handleFileChange} className="hidden" id="fileInput" />
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="hidden"
+            id="fileInput"
+          />
           <label htmlFor="fileInput" className="cursor-pointer text-gray-600">
             {file ? "Change Image" : "Select or Drop Image"}
           </label>
@@ -232,7 +240,7 @@ const BannerAdmin = () => {
         <button
           type="submit"
           disabled={loading}
-          className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-semibold"
+          className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-semibold w-full md:w-auto"
         >
           {loading ? "Uploading..." : "Upload"}
         </button>
@@ -250,15 +258,19 @@ const BannerAdmin = () => {
       {preview && (
         <div className="mb-6 flex justify-center">
           <div className="border rounded-lg overflow-hidden shadow-md">
-            <img src={preview} alt="Preview" className="w-64 h-48 object-cover" />
+            <img
+              src={preview}
+              alt="Preview"
+              className="w-64 h-48 object-cover"
+            />
           </div>
         </div>
       )}
 
       {fetching ? (
-        <p className="text-gray-500">Loading banners...</p>
+        <p className="text-gray-500 text-center">Loading banners...</p>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {banners.map((banner) => (
             <BannerCard
               key={banner._id}

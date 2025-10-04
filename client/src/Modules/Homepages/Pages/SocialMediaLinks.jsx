@@ -1,63 +1,104 @@
 // SocialMediaLinks.jsx
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 const SocialMediaLinks = () => {
-  const facebookLinks = [
-    {
-      url: "https://www.facebook.com/putsf/photos/pb.100064406182633.-2207520000/2152802001550017/?type=3",
-      thumbnail: "https://www.facebook.com/putsf/photos/pb.100064406182633.-2207520000/2152802001550017/?type=3",
-      label: "Facebook Post"
-    },
-    {
-      url: "https://www.facebook.com/reel/866407385407233/?s=fb_shorts_profile&stack_idx=0",
-      thumbnail: "https://via.placeholder.com/300x500.png?text=Reel+1",
-      label: "Facebook Reel 1"
-    },
-    {
-      url: "https://www.facebook.com/reel/2323132691067806/?s=fb_shorts_profile&stack_idx=0",
-      thumbnail: "https://via.placeholder.com/300x500.png?text=Reel+2",
-      label: "Facebook Reel 2"
-    },
+  const facebookPosts = [
+    "https://www.facebook.com/putsf/photos/pb.100064406182633.-2207520000/2152802001550017/",
+    "https://www.facebook.com/reel/866407385407233/",
+    "https://www.facebook.com/reel/2323132691067806/",
   ];
 
+  const [sdkLoaded, setSdkLoaded] = useState(false);
+
+  // Load Facebook SDK
+  useEffect(() => {
+    if (!window.FB) {
+      const script = document.createElement("script");
+      script.src =
+        "https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v17.0";
+      script.async = true;
+      script.defer = true;
+      script.onload = () => setSdkLoaded(true);
+      document.body.appendChild(script);
+    } else {
+      setSdkLoaded(true);
+      window.FB.XFBML.parse();
+    }
+  }, []);
+
+  // Parse embeds whenever SDK is loaded or posts change
+  useEffect(() => {
+    if (sdkLoaded && window.FB) {
+      window.FB.XFBML.parse();
+    }
+  }, [sdkLoaded]);
+
   return (
-    <div style={{ display: "flex", justifyContent: "center", padding: "40px 20px" }}>
-      <div style={{ maxWidth: "1200px", width: "100%" }}>
-        <h1 style={{ textAlign: "center", marginBottom: "40px" }}>My Facebook Links</h1>
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
-          gap: "20px"
-        }}>
-          {facebookLinks.map((link, index) => (
-            <a 
-              key={index} 
-              href={link.url} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              style={{
-                textDecoration: "none",
-                color: "black",
-                borderRadius: "10px",
-                overflow: "hidden",
-                boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
-                transition: "transform 0.2s, box-shadow 0.2s"
-              }}
+    <div style={styles.container}>
+      <div style={styles.content}>
+        <h1 style={styles.heading}>My Facebook Posts</h1>
+        <div style={styles.grid}>
+          {facebookPosts.map((postUrl, index) => (
+            <div
+              key={index}
+              className="fb-post"
+              data-href={postUrl}
+              data-width="500"
+              style={styles.post}
             >
-              <div style={{ position: "relative" }}>
-                <img 
-                  src={link.thumbnail} 
-                  alt={link.label} 
-                  style={{ width: "100%", height: "auto", display: "block" }} 
-                />
-              </div>
-              <p style={{ padding: "10px", fontWeight: "bold", textAlign: "center" }}>{link.label}</p>
-            </a>
+              {!sdkLoaded && (
+                <div style={styles.placeholder}>
+                  Loading Facebook post...
+                </div>
+              )}
+            </div>
           ))}
         </div>
       </div>
     </div>
   );
+};
+
+// Inline styles for simplicity
+const styles = {
+  container: {
+    display: "flex",
+    justifyContent: "center",
+    padding: "60px 20px",
+    backgroundColor: "#f9f9f9",
+    minHeight: "100vh",
+  },
+  content: {
+    maxWidth: "900px",
+    width: "100%",
+  },
+  heading: {
+    textAlign: "center",
+    marginBottom: "50px",
+    fontSize: "2.5rem",
+    color: "#333",
+    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+  },
+  grid: {
+    display: "grid",
+    gridTemplateColumns: "1fr",
+    gap: "40px",
+  },
+  post: {
+    margin: "0 auto",
+    transition: "transform 0.3s, box-shadow 0.3s",
+    cursor: "pointer",
+  },
+  placeholder: {
+    height: "300px",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#e0e0e0",
+    color: "#555",
+    fontSize: "1rem",
+    borderRadius: "10px",
+  },
 };
 
 export default SocialMediaLinks;
