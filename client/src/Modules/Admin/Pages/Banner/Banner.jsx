@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 // Banner Card Component
@@ -7,17 +7,17 @@ const BannerCard = ({ banner, onDelete, onUpdate }) => {
   const [title, setTitle] = useState(banner.title);
   const [subtitle, setSubtitle] = useState(banner.subtitle || "");
 
+  const MEDIA_URL = import.meta.env.VITE_MEDIA_BASE_URL; // points to /static
+
   const handleSave = () => {
     onUpdate(banner._id, { title, subtitle });
     setIsEditing(false);
   };
 
-  const MEDIA_URL = import.meta.env.VITE_MEDIA_BASE_URL;
-
   return (
     <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col">
       <img
-        src={banner.image_url ? banner.image_url : `${MEDIA_URL}${banner.image}`}
+        src={`${MEDIA_URL}${banner.image}`} // always from static
         alt={banner.title}
         className="w-full h-56 object-cover"
       />
@@ -81,19 +81,13 @@ const BannerAdmin = () => {
   const [banners, setBanners] = useState([]);
   const [title, setTitle] = useState("");
   const [subtitle, setSubtitle] = useState("");
-  const [file, setFile] = useState(null);
-  const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [fetching, setFetching] = useState(false);
   const [error, setError] = useState("");
-
-  const dropRef = useRef(null);
 
   const API_URL = `${import.meta.env.VITE_API_BASE_URL}/banners/`;
 
+  // Fetch banners from backend
   const fetchBanners = async () => {
-    setFetching(true);
     setError("");
     try {
       const res = await axios.get(API_URL);
@@ -101,8 +95,6 @@ const BannerAdmin = () => {
     } catch (err) {
       console.error(err);
       setError("Failed to fetch banners.");
-    } finally {
-      setFetching(false);
     }
   };
 
@@ -110,62 +102,25 @@ const BannerAdmin = () => {
     fetchBanners();
   }, []);
 
-  useEffect(() => {
-    const div = dropRef.current;
-    const handleDrop = (e) => {
-      e.preventDefault();
-      const droppedFile = e.dataTransfer.files[0];
-      setFile(droppedFile);
-      setPreview(URL.createObjectURL(droppedFile));
-    };
-    const handleDragOver = (e) => e.preventDefault();
-    div.addEventListener("drop", handleDrop);
-    div.addEventListener("dragover", handleDragOver);
-    return () => {
-      div.removeEventListener("drop", handleDrop);
-      div.removeEventListener("dragover", handleDragOver);
-    };
-  }, []);
-
-  const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0];
-    setFile(selectedFile);
-    if (selectedFile) setPreview(URL.createObjectURL(selectedFile));
-    else setPreview(null);
-  };
-
-  const handleUpload = async (e) => {
+  // Add new banner (only metadata: title, subtitle)
+  const handleAdd = async (e) => {
     e.preventDefault();
-    if (!file || !title) {
-      setError("Please provide a title and select an image.");
+    if (!title) {
+      setError("Please provide a title.");
       return;
     }
 
     setLoading(true);
     setError("");
-    setProgress(0);
-
-    const formData = new FormData();
-    formData.append("title", title);
-    formData.append("subtitle", subtitle);
-    formData.append("image", file);
 
     try {
-      await axios.post(API_URL, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-        onUploadProgress: (progressEvent) => {
-          setProgress(Math.round((progressEvent.loaded * 100) / progressEvent.total));
-        },
-      });
+      await axios.post(API_URL, { title, subtitle });
       setTitle("");
       setSubtitle("");
-      setFile(null);
-      setPreview(null);
-      setProgress(0);
       fetchBanners();
     } catch (err) {
       console.error(err);
-      setError("Failed to upload banner.");
+      setError("Failed to add banner.");
     } finally {
       setLoading(false);
     }
@@ -186,9 +141,7 @@ const BannerAdmin = () => {
   const handleUpdate = async (_id, data) => {
     try {
       await axios.patch(`${API_URL}${_id}/`, data);
-      setBanners((prev) =>
-        prev.map((b) => (b._id === _id ? { ...b, ...data } : b))
-      );
+      setBanners((prev) => prev.map((b) => (b._id === _id ? { ...b, ...data } : b)));
     } catch (err) {
       console.error(err);
       setError("Failed to update banner.");
@@ -204,8 +157,9 @@ const BannerAdmin = () => {
 
       {error && <div className="mb-4 text-red-600 font-medium">{error}</div>}
 
+      {/* Add Banner Form */}
       <form
-        onSubmit={handleUpload}
+        onSubmit={handleAdd}
         className="mb-6 flex flex-col md:flex-row gap-4 items-center"
       >
         <input
@@ -222,53 +176,18 @@ const BannerAdmin = () => {
           onChange={(e) => setSubtitle(e.target.value)}
           className="border p-3 rounded-lg flex-1 w-full shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none"
         />
-        <div
-          ref={dropRef}
-          className="border-2 border-dashed border-gray-300 p-4 rounded-lg w-full md:w-auto text-center cursor-pointer hover:border-blue-400 hover:bg-gray-100 transition"
-        >
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-            className="hidden"
-            id="fileInput"
-          />
-          <label htmlFor="fileInput" className="cursor-pointer text-gray-600">
-            {file ? "Change Image" : "Select or Drop Image"}
-          </label>
-        </div>
         <button
           type="submit"
           disabled={loading}
           className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-semibold w-full md:w-auto"
         >
-          {loading ? "Uploading..." : "Upload"}
+          {loading ? "Adding..." : "Add Banner"}
         </button>
       </form>
 
-      {loading && progress > 0 && (
-        <div className="w-full bg-gray-200 h-2 rounded mb-4 overflow-hidden">
-          <div
-            className="bg-blue-600 h-2 rounded"
-            style={{ width: `${progress}%` }}
-          ></div>
-        </div>
-      )}
-
-      {preview && (
-        <div className="mb-6 flex justify-center">
-          <div className="border rounded-lg overflow-hidden shadow-md">
-            <img
-              src={preview}
-              alt="Preview"
-              className="w-64 h-48 object-cover"
-            />
-          </div>
-        </div>
-      )}
-
-      {fetching ? (
-        <p className="text-gray-500 text-center">Loading banners...</p>
+      {/* Banner List */}
+      {banners.length === 0 ? (
+        <p className="text-gray-500 text-center">No banners found.</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {banners.map((banner) => (
