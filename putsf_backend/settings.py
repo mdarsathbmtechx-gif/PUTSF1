@@ -124,18 +124,20 @@ def get_db():
         if MONGO_URI and MONGO_DB_NAME:
             try:
                 client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
-                client.admin.command('ping')
+                client.admin.command('ping')  # Test connection
                 _db = client[MONGO_DB_NAME]
                 if DEBUG:
-                    print(f"✅ Connected to MongoDB Atlas: {MONGO_DB_NAME}")
+                    print(f"✅ Connected to MongoDB: {MONGO_DB_NAME}")
             except Exception as e:
                 _db = None
                 if DEBUG:
-                    print(f"❌ MongoDB connection failed: {e}")
+                    print(f"⚠️ MongoDB connection failed: {e}. Skipping MongoDB.")
         else:
+            _db = None
             if DEBUG:
-                print("⚠️ MONGO_URI or MONGO_DB_NAME not set.")
+                print("⚠️ MONGO_URI or MONGO_DB_NAME not set. Skipping MongoDB.")
     return _db
+
 
 # -----------------------------
 # Password Validation
