@@ -10,8 +10,7 @@ const Banner = () => {
     try {
       const res = await axios.get(API_URL);
       setBanners(res.data);
-      console.log(res.data,);
-      
+      console.log(res.data);
     } catch (err) {
       console.error("Failed to fetch banners:", err);
     }
@@ -26,15 +25,24 @@ const Banner = () => {
       <div className="container max-w-7xl mx-auto px-4">
         {banners.length > 0 ? (
           banners.map((banner) => (
-            <div key={banner._id} className="w-full relative mb-6">
+            <div
+              key={banner._id}
+              className="relative mb-6 w-full overflow-hidden rounded-xl shadow-lg"
+            >
               <img
                 src={banner.image_url ? banner.image_url : `${MEDIA_URL}${banner.image}`}
                 alt={banner.title}
-                className="w-full object-contain rounded-xl shadow-lg animate-fadeZoom animate-float"
+                className="w-full h-[300px] md:h-[400px] lg:h-[500px] object-cover transition-transform duration-500 hover:scale-105"
               />
-              <div className="absolute bottom-4 left-4 text-white">
-                <h2 className="text-2xl font-bold">{banner.title}</h2>
-                {banner.subtitle && <p className="text-lg">{banner.subtitle}</p>}
+              <div className="absolute bottom-4 left-4 bg-black/40 p-4 rounded-md max-w-[90%] md:max-w-[60%] lg:max-w-[50%]">
+                <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-white">
+                  {banner.title}
+                </h2>
+                {banner.subtitle && (
+                  <p className="text-sm md:text-lg lg:text-xl text-white mt-1">
+                    {banner.subtitle}
+                  </p>
+                )}
               </div>
             </div>
           ))
