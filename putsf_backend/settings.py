@@ -164,13 +164,15 @@ USE_TZ = True
 # -----------------------------
 # Static & Media
 # -----------------------------
+# Static files
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "putsf_backend", "static")]
-STATIC_ROOT = BASE_DIR / "staticfiles"  # collectstatic output
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
-# Media is not used on free Render/Vercel (uploads not supported)
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
+# Media files (user uploads)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / "media"  # Create a separate folder for media
+
 
 # Full base URL for building absolute URLs
 if not DEBUG:
