@@ -1,115 +1,126 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 
 const SocialMediaLinks = () => {
-  const facebookPosts = [
-    "https://www.facebook.com/putsf/photos/pb.100064406182633.-2207520000/2152802001550017/",
-    "https://www.facebook.com/reel/866407385407233/",
-    "https://www.facebook.com/reel/2323132691067806/",
-  ];
-
-  const [sdkLoaded, setSdkLoaded] = useState(false);
-
-  // Load Facebook SDK
   useEffect(() => {
-    if (!window.FB) {
-      const script = document.createElement("script");
-      script.src =
-        "https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v17.0";
-      script.async = true;
-      script.defer = true;
-      script.onload = () => setSdkLoaded(true);
-      document.body.appendChild(script);
-    } else {
-      setSdkLoaded(true);
-      window.FB.XFBML.parse();
-    }
+    // Load Facebook script (for both Facebook iframes)
+    const fbScript = document.createElement("script");
+    fbScript.src = "https://www.embedista.com/j/fbwidget.js";
+    fbScript.async = true;
+    document.body.appendChild(fbScript);
+
+    // Load Instagram embed script
+    const instaScript = document.createElement("script");
+    instaScript.src = "https://www.instagram.com/embed.js";
+    instaScript.async = true;
+    document.body.appendChild(instaScript);
+
+    return () => {
+      document.body.removeChild(fbScript);
+      document.body.removeChild(instaScript);
+    };
   }, []);
 
-  useEffect(() => {
-    if (sdkLoaded && window.FB) {
-      window.FB.XFBML.parse();
-    }
-  }, [sdkLoaded]);
-
   return (
-    <div style={styles.container}>
-      <div style={styles.content}>
-        <h1 style={styles.heading}>Follow Us on Facebook</h1>
-        <div style={styles.grid}>
-          {facebookPosts.map((postUrl, index) => (
-            <div
-              key={index}
-              className="fb-post"
-              data-href={postUrl}
-              data-width="500"
-              style={styles.card}
+    <section className="bg-gray-50 py-20 min-h-screen flex flex-col items-center">
+      <div className="max-w-7xl w-full px-6">
+        {/* ===== Heading ===== */}
+        <div className="text-center mb-16">
+          <h1 className="text-4xl md:text-5xl font-bold text-indigo-600 mb-4">
+            Follow Us on Social Media
+          </h1>
+          <p className="text-indigo-600 text-lg md:text-xl">
+            Stay connected with us on Facebook and Instagram!
+          </p>
+        </div>
+
+        {/* ===== Facebook Grid ===== */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 justify-items-center mb-20">
+          {/* Facebook 1 */}
+          <div className="flex flex-col items-center bg-white rounded-2xl shadow-lg p-6 w-full max-w-md">
+            <h2 className="text-2xl font-semibold text-indigo-600 mb-4">
+              Facebook Page 1
+            </h2>
+            <iframe
+              title="Facebook Page 1"
+              frameBorder="0"
+              width="340"
+              height="300"
+              src="https://www.facebook.com/v9.0/plugins/page.php?adapt_container_width=true&amp;app_id=113869198637480&amp;container_width=340&amp;height=300&amp;hide_cover=false&amp;href=https%3A%2F%2Fwww.facebook.com%2Fswaminathan1105&amp;locale=en_US&amp;sdk=joey&amp;show_facepile=true&amp;small_header=false&amp;tabs=timeline&amp;width=500"
+              className="rounded-lg shadow-md"
+              allow="encrypted-media"
+            ></iframe>
+            <a
+              href="https://www.facebook.com/swaminathan1105"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold shadow hover:bg-blue-700 transition"
             >
-              {!sdkLoaded && (
-                <div style={styles.placeholder}>
-                  Loading Facebook post...
-                </div>
-              )}
-            </div>
-          ))}
+              Visit Page 1
+            </a>
+          </div>
+
+          {/* Facebook 2 */}
+          <div className="flex flex-col items-center bg-white rounded-2xl shadow-lg p-6 w-full max-w-md">
+            <h2 className="text-2xl font-semibold text-indigo-600 mb-4">
+              Facebook Page 2
+            </h2>
+            <iframe
+              title="Facebook Page 2"
+              frameBorder="0"
+              width="340"
+              height="300"
+              src="https://www.facebook.com/v9.0/plugins/page.php?adapt_container_width=true&amp;app_id=113869198637480&amp;container_width=340&amp;height=300&amp;hide_cover=false&amp;href=https%3A%2F%2Fwww.facebook.com%2Fsaminathan.yvone&amp;locale=en_US&amp;sdk=joey&amp;show_facepile=true&amp;small_header=false&amp;tabs=timeline&amp;width=500"
+              className="rounded-lg shadow-md"
+              allow="encrypted-media"
+            ></iframe>
+            <a
+              href="https://www.facebook.com/saminathan.yvone"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold shadow hover:bg-blue-700 transition"
+            >
+              Visit Page 2
+            </a>
+          </div>
+        </div>
+
+        {/* ===== Instagram Section ===== */}
+        <div className="flex flex-col items-center bg-white rounded-2xl shadow-lg p-8 max-w-lg mx-auto">
+          <h2 className="text-3xl font-semibold text-pink-600 mb-6">
+            Follow Us on Instagram
+          </h2>
+
+          {/* Instagram Embed */}
+          <blockquote
+            className="instagram-media"
+            data-instgrm-permalink="https://www.instagram.com/c.s.swamynathan/?utm_source=qr&igsh=b2V2bDd1aG43ZDAz#"
+            data-instgrm-version="12"
+            style={{
+              background: "#FFF",
+              border: "0",
+              borderRadius: "3px",
+              boxShadow:
+                "0 0 1px 0 rgba(0,0,0,0.5), 0 1px 10px 0 rgba(0,0,0,0.15)",
+              margin: "1px",
+              maxWidth: "540px",
+              minWidth: "326px",
+              padding: "0",
+              width: "100%",
+            }}
+          ></blockquote>
+
+          <a
+            href="https://www.instagram.com/c.s.swamynathan/?utm_source=qr&igsh=b2V2bDd1aG43ZDAz"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-6 inline-block bg-pink-600 text-white px-6 py-3 rounded-lg font-semibold shadow hover:bg-pink-700 transition"
+          >
+            Visit Instagram Profile
+          </a>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
-
-// Styles
-const styles = {
-  container: {
-    display: "flex",
-    justifyContent: "center",
-    padding: "60px 20px",
-    backgroundColor: "#f4f4f9",
-    minHeight: "100vh",
-  },
-  content: {
-    maxWidth: "1000px",
-    width: "100%",
-  },
-  heading: {
-    textAlign: "center",
-    marginBottom: "50px",
-    fontSize: "2.5rem",
-    color: "#1a1a1a",
-    fontWeight: "700",
-    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-  },
-  grid: {
-    display: "grid",
-    gridTemplateColumns: "1fr",
-    gap: "40px",
-  },
-  card: {
-    margin: "0 auto",
-    borderRadius: "12px",
-    overflow: "hidden",
-    boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-    transition: "transform 0.3s, box-shadow 0.3s",
-    cursor: "pointer",
-  },
-  placeholder: {
-    height: "350px",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#e0e0e0",
-    color: "#555",
-    fontSize: "1rem",
-  },
-};
-
-// Responsive adjustments with media queries
-const mediaQuery = window.matchMedia("(min-width: 768px)");
-if (mediaQuery.matches) {
-  styles.grid.gridTemplateColumns = "1fr 1fr";
-}
-const largeQuery = window.matchMedia("(min-width: 1200px)");
-if (largeQuery.matches) {
-  styles.grid.gridTemplateColumns = "1fr 1fr 1fr";
-}
 
 export default SocialMediaLinks;

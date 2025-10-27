@@ -7,23 +7,46 @@ import HomepagesRoutes from "./HomepagesRoutes";
 import AdminRoutes from "./AdminRoutes";
 import Gallery from "../Modules/Homepages/Pages/Gallery";
 import BlogHome from "../Modules/Homepages/Pages/Blog";
+import Layout from "../Modules/Homepages/Layout/Layout";
+
 
 const AppRoutes = () => {
   return (
     <Router>
-      <Routes>
-        {/* Public/Homepages routes */}
-        <Route path="/*" element={<HomepagesRoutes />} />
-        <Route path="/gallery" element={<Gallery />} />
-        <Route path="/blog" element={<BlogHome />} />
+     <Routes>
+  {/* Public/Homepages routes wrapped in Layout */}
+  <Route 
+    path="/*" 
+    element={
+      <Layout>
+        <HomepagesRoutes />
+      </Layout>
+    } 
+  />
+  <Route 
+    path="/gallery" 
+    element={
+      <Layout>
+        <Gallery />
+      </Layout>
+    } 
+  />
+  <Route 
+    path="/blog" 
+    element={
+      <Layout>
+        <BlogHome />
+      </Layout>
+    } 
+  />
 
+  {/* Admin routes – maybe without Layout if admin has a separate design */}
+  <Route path="/admin/*" element={<AdminRoutes />} />
 
-        {/* Admin routes */}
-        <Route path="/admin/*" element={<AdminRoutes />} />
+  {/* Redirect unknown paths */}
+  <Route path="*" element={<Navigate to="/" />} />
+</Routes>
 
-        {/* Redirect unknown paths to homepage */}
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
     </Router>
   );
 };
