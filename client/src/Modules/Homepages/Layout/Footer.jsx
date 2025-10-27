@@ -1,6 +1,6 @@
 // src/Modules/Homepages/Layout/Footer.jsx
 import React from "react";
-import Logo from "../../../assets/bm techx logo.png";
+import Logo from "../../../assets/Putsf/gallery/bm-techx-logo.png";
 
 const Footer = () => {
   return (
