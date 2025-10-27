@@ -8,15 +8,22 @@ const SocialMediaLinks = () => {
     fbScript.async = true;
     document.body.appendChild(fbScript);
 
-    // Load Instagram embed script
+    // Load Instagram script
     const instaScript = document.createElement("script");
     instaScript.src = "https://www.instagram.com/embed.js";
     instaScript.async = true;
     document.body.appendChild(instaScript);
 
+    // Load Twitter widget script
+    const twitterScript = document.createElement("script");
+    twitterScript.src = "https://platform.twitter.com/widgets.js";
+    twitterScript.async = true;
+    document.body.appendChild(twitterScript);
+
     return () => {
       document.body.removeChild(fbScript);
       document.body.removeChild(instaScript);
+      document.body.removeChild(twitterScript);
     };
   }, []);
 
@@ -29,7 +36,7 @@ const SocialMediaLinks = () => {
             Follow Us on Social Media
           </h1>
           <p className="text-indigo-600 text-lg md:text-xl">
-            Stay connected with us on Facebook and Instagram!
+            Stay connected with us on Facebook, Instagram, and Twitter!
           </p>
         </div>
 
@@ -45,7 +52,7 @@ const SocialMediaLinks = () => {
               frameBorder="0"
               width="340"
               height="300"
-              src="https://www.facebook.com/v9.0/plugins/page.php?adapt_container_width=true&amp;app_id=113869198637480&amp;container_width=340&amp;height=300&amp;hide_cover=false&amp;href=https%3A%2F%2Fwww.facebook.com%2Fswaminathan1105&amp;locale=en_US&amp;sdk=joey&amp;show_facepile=true&amp;small_header=false&amp;tabs=timeline&amp;width=500"
+              src="https://www.facebook.com/v9.0/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fswaminathan1105&tabs=timeline&width=340&height=300&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true"
               className="rounded-lg shadow-md"
               allow="encrypted-media"
             ></iframe>
@@ -69,7 +76,7 @@ const SocialMediaLinks = () => {
               frameBorder="0"
               width="340"
               height="300"
-              src="https://www.facebook.com/v9.0/plugins/page.php?adapt_container_width=true&amp;app_id=113869198637480&amp;container_width=340&amp;height=300&amp;hide_cover=false&amp;href=https%3A%2F%2Fwww.facebook.com%2Fsaminathan.yvone&amp;locale=en_US&amp;sdk=joey&amp;show_facepile=true&amp;small_header=false&amp;tabs=timeline&amp;width=500"
+              src="https://www.facebook.com/v9.0/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fsaminathan.yvone&tabs=timeline&width=340&height=300&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true"
               className="rounded-lg shadow-md"
               allow="encrypted-media"
             ></iframe>
@@ -85,15 +92,14 @@ const SocialMediaLinks = () => {
         </div>
 
         {/* ===== Instagram Section ===== */}
-        <div className="flex flex-col items-center bg-white rounded-2xl shadow-lg p-8 max-w-lg mx-auto">
+        <div className="flex flex-col items-center bg-white rounded-2xl shadow-lg p-8 max-w-lg mx-auto mb-20">
           <h2 className="text-3xl font-semibold text-pink-600 mb-6">
             Follow Us on Instagram
           </h2>
 
-          {/* Instagram Embed */}
           <blockquote
             className="instagram-media"
-            data-instgrm-permalink="https://www.instagram.com/c.s.swamynathan/?utm_source=qr&igsh=b2V2bDd1aG43ZDAz#"
+            data-instgrm-permalink="https://www.instagram.com/c.s.swamynathan/?utm_source=qr&igsh=b2V2bDd1aG43ZDAz"
             data-instgrm-version="12"
             style={{
               background: "#FFF",
@@ -116,6 +122,34 @@ const SocialMediaLinks = () => {
             className="mt-6 inline-block bg-pink-600 text-white px-6 py-3 rounded-lg font-semibold shadow hover:bg-pink-700 transition"
           >
             Visit Instagram Profile
+          </a>
+        </div>
+
+        {/* ===== Twitter Section ===== */}
+        <div className="flex flex-col items-center bg-white rounded-2xl shadow-lg p-8 max-w-lg mx-auto">
+          <h2 className="text-3xl font-semibold text-sky-500 mb-6">
+            Follow Us on Twitter (X)
+          </h2>
+
+          <blockquote
+            className="twitter-timeline"
+            data-width="340"
+            data-height="500"
+            data-dnt="true"
+            align="center"
+          >
+            <a href="https://x.com/c_pondy?t=kakIyholWlGDvDTB5xGFqQ&s=09">
+              Loading Tweets...
+            </a>
+          </blockquote>
+
+          <a
+            href="https://x.com/c_pondy?t=kakIyholWlGDvDTB5xGFqQ&s=09"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-6 inline-block bg-sky-500 text-white px-6 py-3 rounded-lg font-semibold shadow hover:bg-sky-600 transition"
+          >
+            Visit Twitter Profile
           </a>
         </div>
       </div>

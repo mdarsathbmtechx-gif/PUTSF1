@@ -11,6 +11,7 @@ const Sidebar = () => {
     { to: "/admin/banner", label: "Banner" },
     { to: "/admin/gallery", label: "Gallery" },
     { to: "/admin/blogs", label: "Blogs" },
+    { to: "/admin/license", label: "License" }, // ✅ Added License link
   ];
 
   return (
@@ -27,17 +28,15 @@ const Sidebar = () => {
 
       {/* Sidebar */}
       <aside
-        className={`
-          fixed top-0 left-0 h-screen w-64 bg-gray-800 text-white z-40
+        className={`fixed top-0 left-0 h-screen w-64 bg-gray-800 text-white z-40
           transform ${isOpen ? "translate-x-0" : "-translate-x-full"}
           transition-transform duration-300 ease-in-out
-          md:translate-x-0 md:fixed
-        `}
+          md:translate-x-0 md:fixed`}
       >
         <div className="p-4 text-xl font-bold border-b border-gray-700">
           Admin Panel
         </div>
-        <nav className="mt-4">
+        <nav className="mt-4 flex flex-col justify-between h-[calc(100%-4rem)]">
           <ul>
             {links.map((link) => (
               <li key={link.to}>
@@ -55,6 +54,11 @@ const Sidebar = () => {
               </li>
             ))}
           </ul>
+
+          {/* Footer Section */}
+          <div className="text-sm text-gray-400 text-center p-4 border-t border-gray-700">
+            © {new Date().getFullYear()} BM Academy. <br /> All rights reserved.
+          </div>
         </nav>
       </aside>
 
