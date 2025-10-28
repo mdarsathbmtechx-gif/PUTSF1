@@ -16,7 +16,6 @@ const HomepagesRoutes = () => {
       <Home />
       <SocialMediaLinks />
       <BlogHome />
-      <License /> {/* ✅ Add this here so License page route exists */}
       <LicenseDownload />
     </>
   );
