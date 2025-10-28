@@ -1,4 +1,3 @@
-// src/Modules/Homepages/Pages/Hero.jsx
 import React from "react";
 import { Link } from "react-router-dom";
 import HeroImage from "../../../assets/PutsfHero.jpg"; // ✅ Local image import
@@ -20,12 +19,14 @@ const Hero = () => {
 
             {/* Call-to-action Buttons */}
             <div className="flex flex-col md:flex-row justify-center md:justify-start gap-4 w-full md:w-auto">
+              {/* ✅ Updated to navigate to /license like “Join Us” button */}
               <Link
-                to="/contact"
+                to="/license"
                 className="bg-indigo-600 text-white font-semibold px-6 py-3 rounded-full shadow hover:bg-indigo-700 transition"
               >
                 Join the Movement
               </Link>
+
               <Link
                 to="/about"
                 className="border border-indigo-600 text-indigo-600 font-semibold px-6 py-3 rounded-full hover:bg-indigo-50 transition"

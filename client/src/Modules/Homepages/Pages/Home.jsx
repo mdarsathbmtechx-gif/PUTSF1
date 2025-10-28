@@ -1,35 +1,43 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import Img1 from "../../../assets/Putsf/gallery/putsf1.jpg";
-import Img2 from "../../../assets/Putsf/gallery/putsf2.jpg";
-import Img3 from "../../../assets/Putsf/gallery/putsf3.jpg";
-import Img4 from "../../../assets/Putsf/gallery/PUTSF4.jpg";
-
-const imagesData = [
-  { id: 1, title: "Image 1", image_url: Img1 },
-  { id: 2, title: "Image 2", image_url: Img2 },
-  { id: 3, title: "Image 3", image_url: Img3 },
-  { id: 4, title: "Image 4", image_url: Img4 },
-];
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Home = () => {
+  const [images, setImages] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  const API_URL = `${import.meta.env.VITE_API_BASE_URL}/gallery/images/`;
+
+  useEffect(() => {
+    const fetchImages = async () => {
+      try {
+        const res = await axios.get(API_URL);
+        setImages(res.data.slice(0, 4)); // show only first 4 images as preview
+      } catch (err) {
+        console.error(err);
+        setError("Failed to load gallery preview.");
+      }
+    };
+    fetchImages();
+  }, []);
 
   return (
-    <main className="font-sans bg-gray-50 text-gray-900">
+    <main className="font-sans bg-gray-50 text-gray-900 relative">
       <div className="container mx-auto px-4 md:px-16 lg:px-24 xl:px-32 py-12">
-
         {/* Gallery Preview */}
         <section className="space-y-6">
-  <h3 className="text-3xl md:text-5xl font-bold text-center text-indigo-600">
-    Gallery Preview
-  </h3>
+          <h3 className="text-3xl md:text-5xl font-bold text-center text-indigo-600">
+            Gallery Preview
+          </h3>
 
+          {error && <p className="text-center text-red-600">{error}</p>}
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {imagesData.map((img) => (
+            {images.map((img) => (
               <div
-                key={img.id}
+                key={img._id}
                 className="relative overflow-hidden rounded-2xl shadow-lg cursor-pointer transform transition-all duration-300 hover:scale-105 border-2 border-transparent hover:border-indigo-400"
                 onClick={() => setSelectedImage(img.image_url)}
               >
@@ -69,6 +77,14 @@ const Home = () => {
           </div>
         )}
       </div>
+
+      {/* ✅ Sticky Join Us Button */}
+      <button
+        onClick={() => navigate("/license")}
+        className="fixed bottom-6 right-6 bg-green-600 text-white font-semibold px-6 py-3 rounded-full shadow-lg hover:bg-green-700 transition-all duration-300 z-50"
+      >
+        Join Us
+      </button>
 
       {/* Tailwind Animations */}
       <style>

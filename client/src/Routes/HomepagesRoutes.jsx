@@ -5,6 +5,8 @@ import Banner from "../Modules/Homepages/Layout/Banner";
 import BlogHome from "../Modules/Homepages/Pages/Blog";
 import Hero from "../Modules/Homepages/Pages/Hero";
 import SocialMediaLinks from "../Modules/Homepages/Pages/SocialMediaLinks";
+import License from "../Modules/Homepages/Pages/License"; // ✅ Add this import
+import LicenseDownload from "../Modules/Homepages/Pages/LicenseDownload";
 
 const HomepagesRoutes = () => {
   return (
@@ -14,6 +16,8 @@ const HomepagesRoutes = () => {
       <Home />
       <SocialMediaLinks />
       <BlogHome />
+      <License /> {/* ✅ Add this here so License page route exists */}
+      <LicenseDownload />
     </>
   );
 };

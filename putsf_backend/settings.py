@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     "putsf_backend.gallery",
     "putsf_backend.blog",
     "putsf_backend.banner",
+    "putsf_backend.license"
 ]
 
 # -----------------------------
