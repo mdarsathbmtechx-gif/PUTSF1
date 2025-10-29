@@ -6,6 +6,6 @@ router = DefaultRouter()
 router.register(r'license', LicenseViewSet, basename='license')
 
 urlpatterns = [
-    path('', include(router.urls)),
-    path('download/', download_license),  # 👈 new route
+    path('', include(router.urls)),                # 👈 this line is crucial
+    path('license-download/', download_license, name='license-download'),
 ]

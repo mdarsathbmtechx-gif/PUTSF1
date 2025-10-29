@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+
+// ✅ Use API base URL from .env
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export default function License() {
   const [formData, setFormData] = useState({
@@ -10,6 +13,8 @@ export default function License() {
     address: "",
     photo: null,
   });
+
+  const fileInputRef = useRef(null);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -22,17 +27,21 @@ export default function License() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const data = new FormData();
     Object.entries(formData).forEach(([key, value]) => {
       data.append(key, value);
     });
 
     try {
-      const res = await axios.post("http://127.0.0.1:8000/api/license/license/", data, {
+      const res = await axios.post(`${API_BASE_URL}/license/`, data, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      toast.success("License submitted successfully!");
-      console.log(res.data);
+
+      toast.success("✅ Membership card application submitted successfully!");
+      console.log("License created:", res.data);
+
+      // Reset form
       setFormData({
         name: "",
         aadhar_number: "",
@@ -40,22 +49,32 @@ export default function License() {
         address: "",
         photo: null,
       });
-    } catch (error) {
-      if (error.response?.data) {
-        toast.error(JSON.stringify(error.response.data));
-      } else {
-        toast.error("Failed to submit license");
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
       }
-      console.error(error);
+    } catch (error) {
+      console.error("Error submitting license:", error);
+      if (error.response?.data) {
+        toast.error(
+          error.response.data.detail ||
+            JSON.stringify(error.response.data, null, 2)
+        );
+      } else {
+        toast.error("❌ Failed to submit membership form. Please try again.");
+      }
     }
   };
 
   return (
     <div className="max-w-xl mx-auto py-10">
-      <h1 className="text-3xl font-bold mb-5 text-center">Apply for License</h1>
+      <h1 className="text-3xl font-bold mb-5 text-center text-red-700 uppercase tracking-wide">
+        Membership Card Application <br />
+        <span className="text-gray-700 text-lg">(Urupinar Attai)</span>
+      </h1>
+
       <form
         onSubmit={handleSubmit}
-        className="space-y-4 bg-white shadow-lg p-6 rounded-lg"
+        className="space-y-4 bg-white shadow-lg p-6 rounded-lg border-t-4 border-red-600"
       >
         <input
           type="text"
@@ -101,15 +120,16 @@ export default function License() {
           name="photo"
           accept="image/*"
           onChange={handleChange}
+          ref={fileInputRef}
           className="w-full border p-2 rounded"
           required
         />
 
         <button
           type="submit"
-          className="bg-blue-600 hover:bg-blue-700 text-white w-full py-2 rounded"
+          className="bg-red-600 hover:bg-red-700 text-white w-full py-2 rounded font-semibold text-lg"
         >
-          Submit
+          Submit Application
         </button>
       </form>
     </div>

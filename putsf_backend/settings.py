@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_extensions',
 
     # Third-party
     'corsheaders',
@@ -84,10 +85,11 @@ ROOT_URLCONF = 'putsf_backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / "templates", BASE_DIR / "putsf_backend" / "templates"],  # ✅ Add both paths
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
@@ -95,6 +97,7 @@ TEMPLATES = [
         },
     },
 ]
+
 
 # -----------------------------
 # WSGI

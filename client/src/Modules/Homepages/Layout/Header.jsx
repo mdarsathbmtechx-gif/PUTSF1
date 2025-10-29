@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Logo from "../../../assets/putsf-logo.jpg";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   const toggleMobileMenu = () => setMobileMenuOpen(!mobileMenuOpen);
 
@@ -25,18 +26,25 @@ const Header = () => {
       </Link>
 
       {/* Desktop Menu */}
-      <ul className="hidden md:flex items-center gap-6 font-medium">
+      <div className="hidden md:flex items-center gap-6 font-medium">
         {menuItems.map((item) => (
-          <li key={item}>
-            <Link
-              to={item === "Home" ? "/" : `/${item.toLowerCase()}`}
-              className="px-3 py-1 rounded-lg transition-all duration-300 hover:bg-indigo-600 hover:text-white"
-            >
-              {item}
-            </Link>
-          </li>
+          <Link
+            key={item}
+            to={item === "Home" ? "/" : `/${item.toLowerCase()}`}
+            className="px-3 py-1 rounded-lg transition-all duration-300 hover:bg-indigo-600 hover:text-white"
+          >
+            {item}
+          </Link>
         ))}
-      </ul>
+
+        {/* Join Us Button */}
+        <button
+          onClick={() => navigate("/license")}
+          className="ml-4 bg-green-600 text-white px-5 py-2 rounded-full font-semibold hover:bg-green-700 transition-all duration-300"
+        >
+          Join Us
+        </button>
+      </div>
 
       {/* Mobile Menu Button */}
       <button
@@ -71,6 +79,19 @@ const Header = () => {
                 </Link>
               </li>
             ))}
+
+            {/* Join Us Button (Mobile) */}
+            <li className="text-center mt-2">
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  navigate("/license");
+                }}
+                className="bg-green-600 text-white w-full py-2 rounded-full font-semibold hover:bg-green-700 transition-all duration-300"
+              >
+                Join Us
+              </button>
+            </li>
           </ul>
         </div>
       )}

@@ -1,4 +1,3 @@
-// src/Modules/Homepages/Layout/Banner.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
@@ -15,7 +14,6 @@ const Banner = () => {
       try {
         const res = await axios.get(API_URL);
         if (res.data && res.data.length > 0) {
-          // show the latest banner (you can change to [0] if you want first one)
           setBanner(res.data[res.data.length - 1]);
         }
       } catch (err) {
@@ -49,34 +47,50 @@ const Banner = () => {
     : `${MEDIA_URL}${banner.image}`;
 
   return (
-    <section className="w-full relative pt-24 bg-white">
-      <div className="container max-w-7xl mx-auto px-4">
-        <div className="relative mb-6 w-full overflow-hidden rounded-xl shadow-xl">
-          {/* Dynamic Banner Image */}
+    <section className="relative w-full pt-24 overflow-hidden">
+      {/* 🩵 Red–White–Blue Gradient Background */}
+      <div className="absolute inset-0 bg-gradient-to-r from-[#0033A0] via-white to-[#D62828] opacity-90"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.15)_0%,_transparent_70%)]"></div>
+
+      {/* ✴️ Curved white band at bottom */}
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-white rounded-t-[80%]"></div>
+
+      {/* 🌄 Banner Image */}
+      <div className="relative container mx-auto max-w-7xl px-4 z-10">
+        <div className="relative overflow-hidden rounded-3xl shadow-2xl border-[6px] border-white mt-6">
           <img
             src={imageSrc}
             alt={banner.title}
-            className="w-full h-[300px] md:h-[400px] lg:h-[500px] object-cover transition-transform duration-700 ease-in-out transform hover:scale-105"
+            className="w-full h-[320px] md:h-[480px] lg:h-[580px] object-cover transition-transform duration-700 ease-in-out transform hover:scale-105"
           />
+          {/* Dark overlay for text visibility */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent"></div>
 
-          {/* Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/40 to-transparent rounded-xl"></div>
-
-          {/* Text Content */}
-          <div className="absolute bottom-8 left-6 md:left-12 lg:left-16 text-white max-w-[90%] md:max-w-[60%] lg:max-w-[50%]">
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-2 opacity-0 animate-fadeInUp delay-100">
+          {/* 🩸 Text Section */}
+          <div className="absolute bottom-10 left-8 md:left-14 lg:left-20 text-white max-w-[90%] md:max-w-[60%] lg:max-w-[50%] drop-shadow-2xl">
+            <h2 className="text-3xl md:text-5xl lg:text-6xl font-extrabold mb-3 animate-fadeInUp delay-100">
               {banner.title}
             </h2>
             {banner.subtitle && (
-              <p className="text-sm md:text-lg lg:text-xl opacity-0 animate-fadeInUp delay-200">
+              <p className="text-lg md:text-2xl opacity-90 animate-fadeInUp delay-200">
                 {banner.subtitle}
               </p>
             )}
+            <div className="h-1 w-24 bg-[#FFD700] my-4 rounded-full animate-fadeInUp delay-300"></div>
+            <p className="text-base md:text-lg font-semibold text-[#FFD700] animate-fadeInUp delay-400 italic">
+              “நம் ஊர் வளர — நம் மக்கள் உயர” 🇮🇳
+            </p>
           </div>
         </div>
       </div>
 
-      {/* Animations */}
+      {/* ⚪ Blue + Red Split Strip Below */}
+      <div className="absolute bottom-0 left-0 w-full h-4 flex">
+        <div className="w-1/2 bg-[#0033A0]"></div>
+        <div className="w-1/2 bg-[#D62828]"></div>
+      </div>
+
+      {/* ✨ Animations */}
       <style>
         {`
           @keyframes fadeInUp {
@@ -88,6 +102,8 @@ const Banner = () => {
           }
           .delay-100 { animation-delay: 0.1s; }
           .delay-200 { animation-delay: 0.2s; }
+          .delay-300 { animation-delay: 0.3s; }
+          .delay-400 { animation-delay: 0.4s; }
         `}
       </style>
     </section>

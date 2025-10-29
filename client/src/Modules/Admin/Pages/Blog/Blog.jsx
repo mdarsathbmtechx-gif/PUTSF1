@@ -1,3 +1,4 @@
+// src/Modules/Admin/Pages/BlogAdmin.jsx
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
@@ -119,15 +120,16 @@ const BlogAdmin = ({ userToken }) => {
 
       <button
         onClick={() => setShowModal(true)}
-        className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
+        className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition shadow-md"
       >
         {editingBlog ? "Edit Blog" : "+ Create New Blog"}
       </button>
 
-      {/* Modal */}
+      {/* ✅ Elegant Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-3xl p-6 relative">
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn">
+          <div className="relative bg-white/80 backdrop-blur-md rounded-2xl shadow-2xl border border-white/30 w-full max-w-3xl p-8 animate-slideUp">
+            {/* Close Button */}
             <button
               onClick={() => {
                 setShowModal(false);
@@ -137,16 +139,18 @@ const BlogAdmin = ({ userToken }) => {
             >
               &times;
             </button>
-            <h2 className="text-2xl font-semibold mb-4">
+
+            <h2 className="text-2xl font-semibold mb-6 text-gray-800">
               {editingBlog ? "Edit Blog" : "Create Blog"}
             </h2>
+
             <form onSubmit={handleCreateOrEdit} className="space-y-4">
               <input
                 type="text"
                 placeholder="Title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full border p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
                 required
               />
               <input
@@ -154,33 +158,34 @@ const BlogAdmin = ({ userToken }) => {
                 placeholder="Subtitle"
                 value={subtitle}
                 onChange={(e) => setSubtitle(e.target.value)}
-                className="w-full border p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
               <textarea
                 placeholder="Content"
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                className="w-full border p-3 rounded h-32 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className="w-full border border-gray-300 p-3 rounded-lg h-32 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 required
               />
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
-                className="w-full border p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
               >
                 <option value="draft">Draft</option>
                 <option value="published">Published</option>
               </select>
 
+              {/* Image Upload */}
               <div
-                className="w-full h-40 border-2 border-dashed border-gray-300 rounded flex items-center justify-center text-gray-500 cursor-pointer hover:border-blue-400 transition"
+                className="w-full h-44 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-gray-500 cursor-pointer hover:border-blue-400 transition"
                 onClick={() => document.getElementById("fileInput").click()}
               >
                 {previewImage ? (
                   <img
                     src={previewImage}
                     alt="Preview"
-                    className="w-full h-full object-cover rounded transition-transform duration-300 hover:scale-105"
+                    className="w-full h-full object-cover rounded-lg transition-transform duration-300 hover:scale-105"
                   />
                 ) : (
                   "Click to select image"
@@ -196,7 +201,7 @@ const BlogAdmin = ({ userToken }) => {
               <button
                 type="submit"
                 disabled={loading}
-                className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition"
+                className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-300 shadow-md"
               >
                 {loading ? "Saving..." : editingBlog ? "Update Blog" : "Create Blog"}
               </button>
@@ -236,6 +241,20 @@ const BlogAdmin = ({ userToken }) => {
           </div>
         ))}
       </div>
+
+      {/* ✨ Modal Animations */}
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes slideUp {
+          from { opacity: 0; transform: translateY(30px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn { animation: fadeIn 0.4s ease-in-out; }
+        .animate-slideUp { animation: slideUp 0.4s ease-in-out; }
+      `}</style>
     </div>
   );
 };
